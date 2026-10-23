@@ -64,3 +64,24 @@ dialog::backdrop{background:#071019b8;backdrop-filter:blur(5px)}.dialog-head{dis
 .game-metrics>div:nth-child(2):before{content:'best ';color:var(--muted)}
 .game-metrics>div:last-child:after{content:' proposals';color:var(--muted)}
 @media(max-width:700px){.game-card{display:block}.game-card-head{margin-bottom:7px}.game-metrics{justify-content:space-between;gap:8px}}
+
+/* Focused match view: result, game selection and score curve. */
+.advanced-settings{margin-top:24px;border-top:1px solid var(--line,#2b3a4a);padding-top:18px}
+.advanced-settings summary,.match-details summary{cursor:pointer;color:#a9bac9;font-size:13px;line-height:1.6}
+.advanced-settings[open] summary{margin-bottom:18px}
+.advanced-settings>button{width:100%;margin-top:12px}
+.match-details{border-top:1px solid #2b3a4a;margin-top:16px}
+.match-details>summary{padding:18px 24px}
+.match-details[open]>summary{border-bottom:1px solid #2b3a4a}
+.arena-frame>.game-strip{margin:0;padding:20px 24px 0;border:0}
+.arena-frame>.curve-pane{border-top:0;padding-top:24px}
+.curve-description{color:#96a8b8;font-size:13px;margin:7px 0 0}
+.curve-head{align-items:center}.chart{height:220px}
+.game-metrics{display:none!important}.game-card{padding:14px 18px!important;min-height:0!important}
+.game-card-head{margin:0!important}.game-card-head strong{font-size:14px}
+.comparison-heading{font-size:11px}.pairing-summary{padding-top:24px;padding-bottom:24px}
+.rail{padding-top:30px}.rail h2{margin-bottom:22px}.notice{font-size:11px}
+@media(min-width:1000px){.workspace{max-width:1240px;margin:0 auto;width:100%}}
+@media(max-width:700px){.arena-frame>.game-strip{padding:14px 14px 0}.curve-head{align-items:flex-start;gap:14px}.curve-description{max-width:220px}.match-details>summary{padding:16px}.chart{height:180px}}
+
+button.primary:hover:not(:disabled){background:#7ceccc;color:#102a25}

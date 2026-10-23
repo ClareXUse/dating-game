@@ -64,10 +64,7 @@ function renderArena(){
   renderGameStrip(pair,index,live);
   renderComparison(pair,live);
   $('profile-caption').textContent=`${g?.n||Number($('n').value)||20} attributes · proposal ${count}`;
-  if(g?.failure)$('game-explanation').textContent=`${g.failure.role} failure: ${g.failure.reason}. The failing role loses this game; details are saved in the replay.`;
-  else if(g?.cancelled)$('game-explanation').textContent='This run was stopped. Completed proposals are preserved; the partial pairing is excluded from standings.';
-  else if(g?.success)$('game-explanation').textContent=`Ideal match found in ${g.candidates_used} proposals. The candidate scores exactly 1 against the original weights.`;
-  else if(g)$('game-explanation').textContent=live?'M proposes → P sees the candidate and may change weights → the referee scores the match. Values of P’s weights remain private until this game finishes.':`Replay of ${m} as M against ${p} as P. Select a bar to inspect its contribution; use Preferences to see P's weights at that proposal.`;
+  $('curve-title').textContent=g?`${m} · score by attempt`:'Score by attempt';
   renderClocks();
 }
 
@@ -88,7 +85,7 @@ function renderGameStrip(pair,index,live){
  const root=$('game-strip');root.replaceChildren();
  for(let i=0;i<2;i++){
    const g=pair.games[i],b=element('button','game-card'+(i===index?' active':''));
-   const head=element('div','game-card-head');head.append(element('strong','',`Game ${i+1}`),element('small','',g?g.cancelled?'STOPPED':g.failure?'ROLE FAILURE':live&&i===index&&state.live.phase!=='finished'?'IN PROGRESS':'RECORDED':'WAITING'));
+   const head=element('div','game-card-head');head.append(element('strong','',`Game ${i+1} · ${g?.matchmaker||pair.bots[i===0?1:0]}`),element('small','',g?g.cancelled?'STOPPED':g.failure?'ROLE FAILURE':live&&i===index&&state.live.phase!=='finished'?'IN PROGRESS':'RECORDED':'WAITING'));
    const metrics=element('div','game-metrics');
    for(const [label,value] of [['Matchmaker',g?.matchmaker||pair.bots[i===0?1:0]],['Best score',g?fmt(g.best_score):'—'],['Proposals',g?.candidates_used??'—']]){
      const item=element('div');item.append(element('small','',label),document.createTextNode(String(value)));metrics.append(item);

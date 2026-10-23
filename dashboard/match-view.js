@@ -4,13 +4,13 @@ import {$,element,fmt,initial} from './helpers.js';
 export function renderComparison(pair,live){
   const root=$('pairing-summary');root.replaceChildren();
   const finished=!!pair.winner&&!pair.cancelled&&pair.games.length===2&&pair.winner!=='Imported replay';
-  const heading=element('div','comparison-heading','SCORE COMPARISON · TWO GAMES');
+  const heading=element('div','comparison-heading','MATCH RESULT');
   const row=element('div','comparison-row');
   pair.bots.forEach((name,i)=>{
     const game=pair.games.find(g=>g?.matchmaker===name);
     const block=element('div','competitor competitor-'+i);
     const badge=element('span','competitor-avatar',initial(name));
-    const info=element('div');info.append(element('strong','',name),element('small','',game?`as Matchmaker · ${game.candidates_used} ${game.candidates_used===1?'proposal':'proposals'}`:'as Matchmaker · waiting'));
+    const info=element('div');info.append(element('strong','',name),element('small','',game?`Best score · ${game.candidates_used} ${game.candidates_used===1?'proposal':'proposals'}`:'Waiting for this bot’s turn'));
     const score=element('b','comparison-score',game?.history?.length?fmt(game.best_score):'—');
     if(game?.failure)score.textContent=game.failure.role==='M'?'M failed':'P failed';
     block.classList.toggle('winner',finished&&pair.winner===name);
@@ -19,7 +19,7 @@ export function renderComparison(pair,live){
   const outcome=element('div','pairing-outcome');
   outcome.append(element('strong','',pair.cancelled||pair.winner==='Stopped'?'Pairing stopped':finished?pair.winner==='Tie'?'Pairing tied':`${pair.winner} wins`:live?'Pairing in progress':'Two roles. Two games.'));
   const failed=pair.games.some(g=>g?.failure);
-  outcome.append(element('span','',failed?'A role failure takes priority over the numeric score.':'Higher best M score wins.'),element('small','',pair.cancelled?'Partial pairings are excluded from standings.':'Equal score → fewer proposals.'));
+  outcome.append(element('span','',failed?'A role failure takes priority over the numeric score.':'Higher best score wins.'),element('small','',pair.cancelled?'Partial pairings are excluded from standings.':'Equal score → fewer proposals.'));
   row.insertBefore(outcome,row.children[1]);root.append(heading,row);
 }
 
