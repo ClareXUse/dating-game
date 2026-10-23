@@ -1,6 +1,8 @@
 import {$,element,fmt,initial,copy,download,post,error,toast} from './helpers.js';
 import {renderCurve,renderAttributes} from './charts.js';
 import {renderGuide} from './guide.js';
+import {renderComparison,setupHelp} from './match-view.js';
+setupHelp();
 
 let state={bots:[],results:[],running:false,live:null,active_games:[]};
 let frozen=null,selection=null,step=0,attribute=0,mode='candidate',initialized=false,playing=null,imports=[];
@@ -60,6 +62,8 @@ function renderArena(){
   renderAttributes(g,row,mode,attribute,i=>{attribute=i;renderArena();});
   renderCurve(h,step,i=>{stopPlayback();selectStep(i);});
   renderGameStrip(pair,index,live);
+  renderComparison(pair,live);
+  $('profile-caption').textContent=`${g?.n||Number($('n').value)||20} attributes · proposal ${count}`;
   if(g?.failure)$('game-explanation').textContent=`${g.failure.role} failure: ${g.failure.reason}. The failing role loses this game; details are saved in the replay.`;
   else if(g?.cancelled)$('game-explanation').textContent='This run was stopped. Completed proposals are preserved; the partial pairing is excluded from standings.';
   else if(g?.success)$('game-explanation').textContent=`Ideal match found in ${g.candidates_used} proposals. The candidate scores exactly 1 against the original weights.`;
@@ -145,7 +149,7 @@ $('stop').onclick=async()=>{try{await post('stop');await refresh();}catch(e){err
 $('rescan').onclick=async()=>{try{await post('rescan');await refresh();toast('Bot roster refreshed');}catch(e){error(e.message);}};
 $('pace').onchange=async()=>{try{await post('pace',{pace:Number($('pace').value)/1000});}catch(e){error(e.message);}};
 for(const id of ['bot-a','bot-b'])$(id).onchange=()=>{if(!current().game)renderArena();};
-document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;for(const x of document.querySelectorAll('[data-mode]'))x.classList.toggle('active',x===b);renderArena();});
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;for(const x of document.querySelectorAll('[data-mode]')){x.classList.toggle('active',x===b);x.setAttribute('aria-pressed',String(x===b));}renderArena();});
 $('previous').onclick=()=>{stopPlayback();selectStep(step-1);};$('next').onclick=()=>{stopPlayback();selectStep(step+1);};
 $('seek').oninput=()=>{stopPlayback();selectStep(Number($('seek').value)-1);};
 $('follow').onchange=()=>{stopPlayback();if($('follow').checked)frozen=null;else freezeLive();renderArena();};
@@ -155,5 +159,5 @@ $('export-results').onclick=()=>download({results:allResults()},'dating-game-res
 $('import').onclick=()=>$('import-file').click();
 function validateGame(g){if(!g||!Number.isInteger(g.n)||g.n<2||g.n>200||typeof g.person!=='string'||typeof g.matchmaker!=='string'||!Array.isArray(g.history)||g.history.length>20)throw Error('Unsupported replay format.');for(const weights of [g.original_weights,g.final_weights])if(weights&&(!Array.isArray(weights)||weights.length!==g.n||weights.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<-1||v>1)))throw Error('Invalid weights in replay.');for(const row of g.history){if(!Array.isArray(row.candidate)||row.candidate.length!==g.n||row.candidate.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<0||v>1)||!Number.isFinite(Number(row.score))||Number(row.score)<-1||Number(row.score)>1)throw Error('Invalid candidate or score in replay.');if(row.weights&&(!Array.isArray(row.weights)||row.weights.length!==g.n||row.weights.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<-1||v>1)))throw Error('Invalid weights in replay.');}return g;}
 $('import-file').onchange=async()=>{try{const file=$('import-file').files[0];if(!file)return;if(file.size>10000000)throw Error('Replay exceeds 10 MB.');const data=JSON.parse(await file.text());let pairs=data.results||[data];if(!Array.isArray(pairs)||pairs.length>100)throw Error('Unsupported replay format.');pairs=pairs.map((r,i)=>{if(r.games){r.games.forEach(validateGame);if(!Array.isArray(r.bots)||r.bots.length!==2||r.bots.some(x=>typeof x!=='string'))throw Error('Invalid pairing.');return {...r,id:'import-'+Date.now()+'-'+i};}const g=validateGame(r);return {id:'import-'+Date.now()+'-'+i,bots:[g.person,g.matchmaker],games:[g],winner:'Imported replay',cancelled:true};});imports.push(...pairs);renderResults();openGame(pairs[0],0);toast('Replay imported locally');}catch(e){error(e.message);}finally{$('import-file').value='';}};
-window.addEventListener('keydown',e=>{if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))return;if(e.key==='ArrowLeft'){e.preventDefault();selectStep(step-1);}if(e.key==='ArrowRight'){e.preventDefault();selectStep(step+1);}});
+window.addEventListener('keydown',e=>{if($('play-guide').open||['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))return;if(e.key==='ArrowLeft'){e.preventDefault();selectStep(step-1);}if(e.key==='ArrowRight'){e.preventDefault();selectStep(step+1);}});
 refresh();setInterval(refresh,250);setInterval(renderClocks,100);

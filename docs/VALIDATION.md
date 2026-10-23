@@ -1,9 +1,9 @@
-# v0.2 validation
+# v0.3 validation
 
 Checked locally on October 22, 2026 (America/New_York).
 
 - Environment: Windows, Python 3.11; native browser ES modules and SVG, no frontend build step.
-- `python -m unittest discover -s tests -v`: **12 tests, 10 passed, 2 skipped**.
+- Last referee test run (v0.2; referee unchanged in v0.3): `python -m unittest discover -s tests -v`: **12 tests, 10 passed, 2 skipped**.
 - Passed: normalization/precision, candidate bounds and Decimal rounding, ideal/anti-ideal validation, update-count and original-relative bounds, full Python pairings at n=2/20/100/200, P receiving the current proposal/history, timeout/malformed replies, live weight redaction, replay contribution equality, cancellation preserving partial records, and result restoration after restart.
 - Skipped: C++ and Julia pairing checks because `g++` and `julia` are not installed here. Their runtime compatibility remains unverified.
 - Browser: completed a real two-game pairing; inspected attribute and signed-preference views; moved back a proposal; checked 200-attribute live play, freezing/rejoining live progress and Stop; opened saved standings/history; switched the build guide to C++; exercised Copy email.
@@ -12,3 +12,12 @@ Checked locally on October 22, 2026 (America/New_York).
 - Not yet verified: macOS/Linux/crunchy5 execution, final competition runtimes/settings, high-load tournaments and browser file import/export end to end. JSON import/export controls are implemented; automated validation covers saved-result restoration.
 
 This is a tested Python architecture preview. Optional checks automatically run when the additional runtimes are available.
+
+## v0.3 browser review
+
+- Compared the published Evasion, Kelly and No Tipping screenshots directly; retained their dark tournament surface, primary match visualization, adjacent inspector, clocks and replay workflow.
+- Full real n=20 pairing completed after the redesign. Verified provisional versus final score comparison, referee-owned winner, contributions hidden during live play, post-game signed contribution bars, zero-value bars, selected-attribute arithmetic and previous-proposal replay.
+- How to play dialog opens, switches English/Chinese, describes P/M, scoring flow and two-game victory, and closes through native dialog controls.
+- In-app browser checked at 1536×1100 and 390×844. Mobile page and dialog do not overflow horizontally. Browser error log was empty; all dashboard JS modules passed `node --check`.
+- Latest native browser captures in screenshots/ include the arena, preferences, contributions, guide and Chinese instructions. Concept-to-render visual inspection used view_image. Full source contains native HTML/CSS/SVG; no generated screenshot substitutes for a working visualization.
+- Existing language/host validation limits above remain.

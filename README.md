@@ -4,7 +4,7 @@ The architecture for NYU **Heuristic Problem Solving — Dating Game**: a refere
 
 Architect: **Zonghao Xu** · [zx1946@nyu.edu](mailto:zx1946@nyu.edu)
 
-**v0.2 — architecture preview.** Built against the [Fall 2026 official rules](https://cs.nyu.edu/courses/fall26/CSCI-GA.2965-001/dating.html), checked October 22, 2026. The submission deadline, competition attribute counts and host machine will be announced separately. Clock, rounding, small-n modification limits and failure handling below are explicit architect decisions for this preview.
+**v0.3 — architecture preview.** Built against the [Fall 2026 official rules](https://cs.nyu.edu/courses/fall26/CSCI-GA.2965-001/dating.html), checked October 22, 2026. The submission deadline, competition attribute counts and host machine will be announced separately. Clock, rounding, small-n modification limits and failure handling below are explicit architect decisions for this preview.
 
 | | |
 |---|---|
@@ -35,17 +35,22 @@ Open **http://127.0.0.1:8092**. On Windows, use `python` instead of `python3`. S
 ![Dating Game tournament desk](docs/screenshots/dashboard.jpg)
 
 1. **Set up:** choose two bots, 2–200 attributes, the thinking clock and a watch pace. **Start pairing** plays both role assignments; **Every pair** runs the full roster.
-2. **Watch live:** attribute bars, proposal progress, score history and separate P/M clocks update during play. **Stop** preserves completed proposals. Watch pace is outside the thinking clock.
-3. **Understand the score:** click an attribute to inspect its contribution. After a game, switch to **Preferences** for signed weights at each proposal, change markers and positive/negative score totals. Weights stay hidden during active play.
-4. **Replay:** step, play, seek on the chart or slider, follow live, and download JSON. **Leaderboard** shows completed-pairing standings and match history; import/export JSON locally.
-5. **Build a bot:** language-specific copy, test and package steps sit beside the submission checklist and architect contact.
+2. **Know the outcome:** the score comparison shows both programs’ best results as M, the pairing winner and the tie-break rule. **How to play** explains both roles, the scoring loop and victory in English or Chinese.
+3. **Watch live:** attribute bars, proposal progress, score history and separate P/M clocks update during play. **Stop** preserves completed proposals. Watch pace is outside the thinking clock.
+4. **Understand the score:** click an attribute to inspect its contribution. After a game, switch to **Preferences** for signed weights at each proposal, or **Contributions** to see which attributes raise or lower the score around a common zero line. The inspector shows the positive and negative sums and their final arithmetic. Weights stay hidden during active play.
+5. **Replay:** step, play, seek on the chart or slider, follow live, and download JSON. **Leaderboard** shows completed-pairing standings and match history; import/export JSON locally.
+6. **Build a bot:** language-specific copy, test and package steps sit beside the submission checklist and architect contact.
 
 Full records save to `results/<timestamp>.json` and restore automatically after a server restart. Starting a run keeps earlier results. Stopped pairings remain available for inspection and are excluded from standings. Imports stay in the browser until reload; use Export results to keep them. Old v0.1 records lack per-proposal weights, so the dashboard explains when a historical contribution is unavailable.
 
 <details>
 <summary><b>Preferences and delivery guide screenshots</b></summary>
 
-![Signed preferences and contribution inspector](docs/screenshots/preferences.jpg)
+![Signed preferences](docs/screenshots/preferences.jpg)
+
+![Per-attribute score contributions](docs/screenshots/contributions.jpg)
+
+![English and Chinese game instructions](docs/screenshots/how-to-play.jpg)
 
 ![Template and submission guide](docs/screenshots/guide.jpg)
 
