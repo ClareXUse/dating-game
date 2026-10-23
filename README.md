@@ -28,7 +28,13 @@ cd dating-game
 python3 start.py
 ```
 
-Open **http://127.0.0.1:8092**. On Windows, use `python` instead of `python3`. Start with the two included Python samples; no compiler or Julia installation is needed for them. Stop the server with **Ctrl+C** after the run finishes.
+Open **http://127.0.0.1:8092**. On Windows, use `python` instead of `python3`. Start with the two included adaptive Python samples; no compiler or Julia installation is needed for them. Stop the server with **Ctrl+C** after the run finishes.
+
+### What the sample bots do
+
+**Sample A · Local search** starts from the best scored example, flips one uncertain attribute at a time, and uses feedback to keep the best candidate. **Sample B · Model learner** refits a linear preference estimate from every observed candidate and score, then tests up to three predicted improvements together. Both use only the normal bot protocol and run in separate processes; neither can see the opponent’s weights.
+
+Their P roles choose random legal preferences and keep them fixed. Scores are calculated by the real referee. Exploration can temporarily lower scores; the best score determines the result. Some games finish early at 1, and improvement is not guaranteed on every seed or attribute count. These are teaching examples, not competitive benchmarks. Source: `bots/examples/bot.py`; starter templates remain separate.
 
 ## The dashboard
 
@@ -60,7 +66,7 @@ Full records save to `results/<timestamp>.json` and restore automatically after 
 <summary><b>Run without the browser / on crunchy5</b></summary>
 
 ```sh
-python3 start.py match "Sample A" "Sample B" --n 20
+python3 start.py match "Sample A · Local search" "Sample B · Model learner" --n 20
 python3 start.py tournament --n 200 --clock 120
 python3 -m unittest discover -s tests -v
 ```

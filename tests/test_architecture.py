@@ -77,7 +77,7 @@ class Integration(unittest.TestCase):
         from referee.server import TournamentDesk
         with tempfile.TemporaryDirectory() as tmp:
             desk=TournamentDesk(result_dir=Path(tmp))
-            desk.start({'n':20,'clock':5,'pace':0,'bots':['Sample A','Sample B']})
+            desk.start({'n':20,'clock':5,'pace':0,'bots':[b['name'] for b in load_bots()]})
             deadline=time.monotonic()+15
             while desk.snapshot()['running'] and time.monotonic()<deadline: time.sleep(.02)
             self.assertFalse(desk.snapshot()['running'])
@@ -144,3 +144,19 @@ for line in sys.stdin:
     def test_julia(self): self.optional_language('julia')
 
 if __name__=='__main__': unittest.main()
+
+
+class AdaptiveExamples(unittest.TestCase):
+    def test_both_strategies_use_new_score_feedback(self):
+        from bots.examples.bot import propose
+        n = 20
+        base = [{'candidate': [0]*n, 'score': '0'} for _ in range(20)]
+        for method in ('coordinate', 'model'):
+            with self.subTest(method=method):
+                good = propose({'n': n, 'round': 2, 'history': base +
+                                [{'candidate': [1]*n, 'score': '.5'}]}, method)
+                bad = propose({'n': n, 'round': 2, 'history': base +
+                               [{'candidate': [1]*n, 'score': '-.5'}]}, method)
+                self.assertNotEqual(good, bad)
+                candidate(good, n)
+                candidate(bad, n)

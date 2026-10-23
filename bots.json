@@ -1,4 +1,20 @@
 [
-  {"name":"Sample A", "cwd":"bots/templates/python", "command":["{python}","bot.py"]},
-  {"name":"Sample B", "cwd":"bots/templates/python", "command":["{python}","bot.py"]}
+  {
+    "name": "Sample A · Local search",
+    "cwd": "bots/examples",
+    "command": [
+      "{python}",
+      "bot.py",
+      "coordinate"
+    ]
+  },
+  {
+    "name": "Sample B · Model learner",
+    "cwd": "bots/examples",
+    "command": [
+      "{python}",
+      "bot.py",
+      "model"
+    ]
+  }
 ]
