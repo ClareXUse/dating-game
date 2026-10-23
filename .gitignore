@@ -9,3 +9,4 @@ bots/*
 !bots/templates/
 !bots/samples/
 organizer/
+!bots/examples/
