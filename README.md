@@ -36,6 +36,10 @@ Open **http://127.0.0.1:8092**. On Windows, use `python` instead of `python3`. S
 
 Their P roles choose random legal preferences and keep them fixed. Scores are calculated by the real referee. Exploration can temporarily lower scores; the best score determines the result. Some games finish early at 1, and improvement is not guaranteed on every seed or attribute count. These are teaching examples, not competitive benchmarks. Source: `bots/examples/bot.py`; starter templates remain separate.
 
+## Receiving submissions and running classmates
+
+Open **Submit & run** in the dashboard: **Players · 怎么交** explains the complete ZIP and email handoff; **Architect · 怎么运行** explains folder placement, a copyable roster, the server command, rescanning and matches. The same instructions are in [the submission and host runbook](docs/HOST_GUIDE.md).
+
 ## The dashboard
 
 ![Dating Game tournament desk](docs/screenshots/dashboard.jpg)

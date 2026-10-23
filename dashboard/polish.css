@@ -85,3 +85,5 @@ dialog::backdrop{background:#071019b8;backdrop-filter:blur(5px)}.dialog-head{dis
 @media(max-width:700px){.arena-frame>.game-strip{padding:14px 14px 0}.curve-head{align-items:flex-start;gap:14px}.curve-description{max-width:220px}.match-details>summary{padding:16px}.chart{height:180px}}
 
 button.primary:hover:not(:disabled){background:#7ceccc;color:#102a25}
+
+.host-guide{grid-template-columns:1fr;max-width:1000px}.host-guide .handoff-rail{display:none}.host-guide .guide-step li{margin:14px 0;line-height:1.8;color:#bac8d4}.audience-tabs{margin-bottom:16px}.host-guide .guide-step p{line-height:1.8}

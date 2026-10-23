@@ -1,6 +1,6 @@
 import {$,element,fmt,initial,copy,download,post,error,toast} from './helpers.js';
 import {renderCurve,renderAttributes} from './charts.js';
-import {renderGuide} from './guide.js';
+import {renderGuide} from './guide.js?v=handoff-1';
 import {renderComparison,setupHelp} from './match-view.js';
 setupHelp();
 
