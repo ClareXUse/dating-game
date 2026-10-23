@@ -4,7 +4,7 @@ The architecture for NYU **Heuristic Problem Solving — Dating Game**: a refere
 
 Architect: **Zonghao Xu** · [zx1946@nyu.edu](mailto:zx1946@nyu.edu)
 
-**v0.1 — architecture preview.** Built against the [Fall 2026 official rules](https://cs.nyu.edu/courses/fall26/CSCI-GA.2965-001/dating.html), checked October 22, 2026. The submission deadline, competition attribute counts and host machine will be announced separately. Clock, rounding, small-n modification limits and failure handling below are explicit architect decisions for this preview.
+**v0.2 — architecture preview.** Built against the [Fall 2026 official rules](https://cs.nyu.edu/courses/fall26/CSCI-GA.2965-001/dating.html), checked October 22, 2026. The submission deadline, competition attribute counts and host machine will be announced separately. Clock, rounding, small-n modification limits and failure handling below are explicit architect decisions for this preview.
 
 | | |
 |---|---|
@@ -34,12 +34,22 @@ Open **http://127.0.0.1:8092**. On Windows, use `python` instead of `python3`. S
 
 ![Dating Game tournament desk](docs/screenshots/dashboard.jpg)
 
-1. **Bots & pairing:** select two bots from the roster and choose n and the clock.
-2. **Run pairing** plays both role assignments. **Every pair** runs a round robin over the loaded roster. Only one tournament runs at a time.
-3. **Results & replay:** completed pairings appear in a table. Choose Game 1 or Game 2 to inspect the score chart and move the proposal slider. Download the selected game as JSON.
-4. **Make & submit a bot:** the handoff checklist is on the same page, so everyone knows exactly what to send.
+1. **Set up:** choose two bots, 2–200 attributes, the thinking clock and a watch pace. **Start pairing** plays both role assignments; **Every pair** runs the full roster.
+2. **Watch live:** attribute bars, proposal progress, score history and separate P/M clocks update during play. **Stop** preserves completed proposals. Watch pace is outside the thinking clock.
+3. **Understand the score:** click an attribute to inspect its contribution. After a game, switch to **Preferences** for signed weights at each proposal, change markers and positive/negative score totals. Weights stay hidden during active play.
+4. **Replay:** step, play, seek on the chart or slider, follow live, and download JSON. **Leaderboard** shows completed-pairing standings and match history; import/export JSON locally.
+5. **Build a bot:** language-specific copy, test and package steps sit beside the submission checklist and architect contact.
 
-The page polls for completed pairings; this preview does not stream individual turns live. Full records save to `results/<timestamp>.json`, including the initial examples, proposals, scores, clocks and post-game weights. The browser results table is session-only; saved JSON files remain after a server restart. Starting another run clears the displayed table, not the saved files.
+Full records save to `results/<timestamp>.json` and restore automatically after a server restart. Starting a run keeps earlier results. Stopped pairings remain available for inspection and are excluded from standings. Imports stay in the browser until reload; use Export results to keep them. Old v0.1 records lack per-proposal weights, so the dashboard explains when a historical contribution is unavailable.
+
+<details>
+<summary><b>Preferences and delivery guide screenshots</b></summary>
+
+![Signed preferences and contribution inspector](docs/screenshots/preferences.jpg)
+
+![Template and submission guide](docs/screenshots/guide.jpg)
+
+</details>
 
 <details>
 <summary><b>Run without the browser / on crunchy5</b></summary>
@@ -108,7 +118,7 @@ Copy `bots.json` to `bots.local.json`, keep a sample opponent, and add your bot 
 ]
 ```
 
-For C++, add `"build":["{python}","build.py"]` to its entry. The build runs before the game clock starts. For Julia use the same `bot.py` entry; the wrapper starts `julia --startup-file=no strategy.jl`. `{python}` is replaced with the referee's Python interpreter. `cwd` is relative to the roster file. Names must be unique. Restart the server after changing the roster.
+For C++, add `"build":["{python}","build.py"]` to its entry. The build runs before the game clock starts. For Julia use the same `bot.py` entry; the wrapper starts `julia --startup-file=no strategy.jl`. `{python}` is replaced with the referee's Python interpreter. `cwd` is relative to the roster file. Names must be unique. Click **Rescan bot roster** after changing the roster while idle, or restart the server.
 
 ```sh
 python3 start.py --bots bots.local.json
@@ -178,6 +188,7 @@ The Python referee and templates were exercised locally on Windows with Python 3
 | `start.py` | Dashboard, command-line matches and round robin |
 | `referee/engine.py` | Decimal validation, dot products and preference updates |
 | `referee/runner.py` | Processes, clocks, role swapping, result records |
+| `referee/server.py` | Live state, run/stop controls and persisted results |
 | `dashboard/` | Local tournament desk and replay controls |
 | `bots/templates/` | Complete Python / C++ / Julia starter folders |
 | `tests/` | Rule and process integration checks |

@@ -3,6 +3,8 @@ from pathlib import Path
 import shutil
 import sys
 import tempfile
+import threading
+import time
 import unittest
 from decimal import Decimal as D
 
@@ -40,6 +42,51 @@ class Rules(unittest.TestCase):
             update({'weights':[.99,-.99]},weights([1,-1],2),weights([1,-1],2))
 
 class Integration(unittest.TestCase):
+    def test_live_redaction_and_replay_contributions(self):
+        events=[]
+        a,b=load_bots()
+        result=game(a,b,20,5,seed=12,on_event=events.append)
+        self.assertIsNone(result['failure'])
+        active=[e['game'] for e in events if e['phase']!='finished']
+        self.assertTrue(any(g['history'] for g in active))
+        for g in active:
+            self.assertNotIn('original_weights',g)
+            self.assertNotIn('final_weights',g)
+            for row in g['history']:
+                self.assertNotIn('weights',row)
+                self.assertNotIn('original_score',row)
+        final=events[-1]['game']
+        self.assertEqual(events[-1]['phase'],'finished')
+        self.assertEqual(final['original_weights'],result['original_weights'])
+        for row in final['history']:
+            actual=dot([D(str(w)) for w in row['weights']],[D(str(v)) for v in row['candidate']])
+            self.assertEqual(display(actual),row['score'])
+
+    def test_stop_preserves_partial_replay_and_excludes_second_game(self):
+        cancel=threading.Event()
+        def stop_after_proposal(event):
+            if event['phase']=='proposal': cancel.set()
+        a,b=load_bots()
+        result=pairing(a,b,20,5,on_event=stop_after_proposal,cancel=cancel)
+        self.assertTrue(result['cancelled'])
+        self.assertEqual(result['winner'],'Stopped')
+        self.assertEqual(len(result['games']),1)
+        self.assertEqual(len(result['games'][0]['history']),1)
+
+    def test_saved_results_restore_after_restart(self):
+        from referee.server import TournamentDesk
+        with tempfile.TemporaryDirectory() as tmp:
+            desk=TournamentDesk(result_dir=Path(tmp))
+            desk.start({'n':20,'clock':5,'pace':0,'bots':['Sample A','Sample B']})
+            deadline=time.monotonic()+15
+            while desk.snapshot()['running'] and time.monotonic()<deadline: time.sleep(.02)
+            self.assertFalse(desk.snapshot()['running'])
+            self.assertIsNone(desk.snapshot()['error'])
+            restored=TournamentDesk(result_dir=Path(tmp)).snapshot()['results']
+            self.assertEqual(len(restored),1)
+            self.assertEqual(len(restored[0]['games']),2)
+            self.assertEqual(restored[0]['id'],desk.snapshot()['results'][0]['id'])
+
     def test_samples_both_roles_full_range(self):
         a,b = load_bots()
         for n in (2,20,100,200):
