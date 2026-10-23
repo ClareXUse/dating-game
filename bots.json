@@ -1,0 +1,4 @@
+[
+  {"name":"Sample A", "cwd":"bots/templates/python", "command":["{python}","bot.py"]},
+  {"name":"Sample B", "cwd":"bots/templates/python", "command":["{python}","bot.py"]}
+]
