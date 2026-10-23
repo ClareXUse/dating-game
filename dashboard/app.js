@@ -1,7 +1,6 @@
 import {$,element,fmt,initial,copy,download,post,error,toast} from './helpers.js';
 import {renderCurve,renderAttributes} from './charts.js';
-import {renderGuide} from './guide.js?v=handoff-1';
-import {renderComparison,setupHelp} from './match-view.js';
+import {renderComparison,setupHelp} from './match-view.js?v=english-1';
 setupHelp();
 
 let state={bots:[],results:[],running:false,live:null,active_games:[]};
@@ -9,18 +8,15 @@ let frozen=null,selection=null,step=0,attribute=0,mode='candidate',initialized=f
 let lastSignature='',lastResults='',lastGameKey='';
 
 function setTab(tab){
-  if(!['arena','leaderboard','guide'].includes(tab))tab='arena';
-  for(const name of ['arena','leaderboard','guide'])$(name+'-view').hidden=name!==tab;
+  if(!['arena','leaderboard'].includes(tab))tab='arena';
+  for(const name of ['arena','leaderboard'])$(name+'-view').hidden=name!==tab;
   for(const b of document.querySelectorAll('[data-tab]')){b.classList.toggle('active',b.dataset.tab===tab);b.setAttribute('aria-current',b.dataset.tab===tab?'page':'false');}
-  $('shell').classList.toggle('guide-mode',tab==='guide');
   if(location.hash!=='#'+tab)history.replaceState(null,'','#'+tab);
 }
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
 document.querySelectorAll('[data-link-tab]').forEach(b=>b.onclick=e=>{e.preventDefault();setTab(b.dataset.linkTab);});
 window.addEventListener('hashchange',()=>setTab(location.hash.slice(1)));
-setTab(location.hash.slice(1)||'arena');renderGuide();
-document.querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>renderGuide(b.dataset.lang));
-$('copy-email').onclick=()=>copy('zx1946@nyu.edu');
+setTab(location.hash.slice(1)||'arena');
 
 function allResults(){return [...state.results,...imports];}
 function current(){

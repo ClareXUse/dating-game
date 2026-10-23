@@ -38,31 +38,28 @@ Their P roles choose random legal preferences and keep them fixed. Scores are ca
 
 ## Receiving submissions and running classmates
 
-Open **Submit & run** in the dashboard: **Players · 怎么交** explains the complete ZIP and email handoff; **Architect · 怎么运行** explains folder placement, a copyable roster, the server command, rescanning and matches. The same instructions are in [the submission and host runbook](docs/HOST_GUIDE.md).
+See the [submission and host runbook](docs/HOST_GUIDE.md) for the complete ZIP requirements, submission address, folder placement, roster examples and commands to run received bots. These instructions live here on GitHub; the dashboard is for matches and results.
 
 ## The dashboard
 
 ![Dating Game tournament desk](docs/screenshots/dashboard.jpg)
 
 1. **Set up:** choose two bots, 2–200 attributes, the thinking clock and a watch pace. **Start pairing** plays both role assignments; **Every pair** runs the full roster.
-2. **Know the outcome:** the score comparison shows both programs’ best results as M, the pairing winner and the tie-break rule. **How to play** explains both roles, the scoring loop and victory in English or Chinese.
+2. **Know the outcome:** the score comparison shows both programs’ best results as M, the pairing winner and the tie-break rule. **How to play** explains both roles, the scoring loop and victory in English.
 3. **Watch live:** attribute bars, proposal progress, score history and separate P/M clocks update during play. **Stop** preserves completed proposals. Watch pace is outside the thinking clock.
 4. **Understand the score:** click an attribute to inspect its contribution. After a game, switch to **Preferences** for signed weights at each proposal, or **Contributions** to see which attributes raise or lower the score around a common zero line. The inspector shows the positive and negative sums and their final arithmetic. Weights stay hidden during active play.
 5. **Replay:** step, play, seek on the chart or slider, follow live, and download JSON. **Leaderboard** shows completed-pairing standings and match history; import/export JSON locally.
-6. **Build a bot:** language-specific copy, test and package steps sit beside the submission checklist and architect contact.
 
 Full records save to `results/<timestamp>.json` and restore automatically after a server restart. Starting a run keeps earlier results. Stopped pairings remain available for inspection and are excluded from standings. Imports stay in the browser until reload; use Export results to keep them. Old v0.1 records lack per-proposal weights, so the dashboard explains when a historical contribution is unavailable.
 
 <details>
-<summary><b>Preferences and delivery guide screenshots</b></summary>
+<summary><b>Preference and contribution screenshots</b></summary>
 
 ![Signed preferences](docs/screenshots/preferences.jpg)
 
 ![Per-attribute score contributions](docs/screenshots/contributions.jpg)
 
-![English and Chinese game instructions](docs/screenshots/how-to-play.jpg)
 
-![Template and submission guide](docs/screenshots/guide.jpg)
 
 </details>
 
