@@ -118,7 +118,7 @@ function renderResults(){
 
 async function refresh(){
  try{
-   const r=await fetch('/api/state',{cache:'no-store'});if(!r.ok)throw Error('Referee unavailable');const next=await r.json();state=next;
+   const r=await fetch('/api/state',{cache:'no-store'});if(!r.ok)throw Error('Referee unavailable');const next=await r.json();const wasRunning=state.running;state=next;
    const rosterKey=next.bots.join('|');
    if($('bot-a').dataset.roster!==rosterKey){for(const id of ['bot-a','bot-b']){const old=$(id).value;$(id).replaceChildren();for(const name of next.bots){const o=element('option','',name);o.value=name;$(id).append(o);}if(next.bots.includes(old))$(id).value=old;}if($('bot-b').value===$('bot-a').value)$('bot-b').selectedIndex=1;$('bot-a').dataset.roster=rosterKey;}
    if(!initialized){$('n').value=next.n;$('clock').value=next.clock;$('pace').value=Math.round(next.pace*1000);initialized=true;}
@@ -129,7 +129,7 @@ async function refresh(){
    error(next.error);
    const signature=String(next.revision)+'|'+String(selection?.id||'')+'|'+$('follow').checked;
    if(signature!==lastSignature){lastSignature=signature;
-     if(!next.running&&$('follow').checked&&next.results.length&&next.live){const latest=next.results.at(-1);selection={id:latest.id,index:Math.max(0,latest.games.length-1)};}
+     if(wasRunning&&!next.running&&$('follow').checked&&next.results.length&&next.live){const latest=next.results.at(-1);selection={id:latest.id,index:Math.max(0,latest.games.length-1)};}
      renderArena();
    }
    const resultSignature=next.results.map(r=>r.id).join('|')+'|'+imports.length;
