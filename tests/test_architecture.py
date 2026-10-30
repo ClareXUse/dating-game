@@ -160,3 +160,38 @@ class AdaptiveExamples(unittest.TestCase):
                 self.assertNotEqual(good, bad)
                 candidate(good, n)
                 candidate(bad, n)
+
+class OnSiteConfiguration(unittest.TestCase):
+    def test_configuration_saved_and_restored_with_pairing(self):
+        from unittest.mock import patch
+        from referee.server import TournamentDesk
+        import json
+        with tempfile.TemporaryDirectory() as tmp:
+            desk = TournamentDesk(result_dir=Path(tmp))
+            config = {'label': 'Finals round 1', 'notes': 'Professor: n=40, clock=90.'}
+            result = {'bots': ['A', 'B'], 'games': [], 'winner': 'Tie'}
+            with patch('referee.server.build'), patch('referee.server.pairing', return_value=result):
+                desk.run([{'name': 'A'}, {'name': 'B'}], 40, 90, config)
+            saved = json.loads(next(Path(tmp).glob('*.json')).read_text(encoding='utf-8'))
+            self.assertEqual(saved['match_configuration']['label'], config['label'])
+            self.assertEqual(saved['match_configuration']['notes'], config['notes'])
+            self.assertEqual(saved['match_configuration']['n'], 40)
+            self.assertEqual(saved['match_configuration']['clock'], 90)
+            restored = TournamentDesk(result_dir=Path(tmp))
+            self.assertEqual(restored.snapshot()['results'][0]['match_configuration'], saved['match_configuration'])
+
+    def test_start_validates_and_freezes_configuration(self):
+        from unittest.mock import patch
+        from referee.server import TournamentDesk
+        with tempfile.TemporaryDirectory() as tmp:
+            desk = TournamentDesk(result_dir=Path(tmp))
+            payload = {'all': True, 'n': 40, 'clock': 90, 'run_label': ' Round A ', 'run_notes': 'Use 40 attributes.'}
+            with patch('referee.server.threading.Thread') as worker:
+                desk.start(payload)
+                config = worker.call_args.kwargs['args'][3]
+                self.assertEqual(config['label'], 'Round A')
+                payload['run_notes'] = 'Changed later'
+                self.assertEqual(config['notes'], 'Use 40 attributes.')
+            desk.status['running'] = False
+            payload['run_label'] = 'x'*101
+            with self.assertRaises(ValueError): desk.start(payload)

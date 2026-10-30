@@ -120,8 +120,8 @@ async function refresh(){
    const r=await fetch('/api/state',{cache:'no-store'});if(!r.ok)throw Error('Referee unavailable');const next=await r.json();const wasRunning=state.running;state=next;
    const rosterKey=next.bots.join('|');
    if($('bot-a').dataset.roster!==rosterKey){for(const id of ['bot-a','bot-b']){const old=$(id).value;$(id).replaceChildren();for(const name of next.bots){const o=element('option','',name);o.value=name;$(id).append(o);}if(next.bots.includes(old))$(id).value=old;}if($('bot-b').value===$('bot-a').value)$('bot-b').selectedIndex=1;$('bot-a').dataset.roster=rosterKey;}
-   if(!initialized){$('n').value=next.n;$('clock').value=next.clock;$('pace').value=Math.round(next.pace*1000);initialized=true;}
-   for(const id of ['start','round-robin','rescan','bot-a','bot-b','n','clock'])$(id).disabled=next.running;
+   if(!initialized){$('run-label').value=next.match_configuration?.label||'';$('run-notes').value=next.match_configuration?.notes||'';$('n').value=next.n;$('clock').value=next.clock;$('pace').value=Math.round(next.pace*1000);initialized=true;}
+   for(const id of ['start','round-robin','rescan','bot-a','bot-b','n','clock','run-label','run-notes'])$(id).disabled=next.running;
    $('stop').disabled=!next.running||next.stopping;
    $('run-status').classList.toggle('running',next.running);
    $('status-text').textContent=next.stopping?'Stopping…':next.running?'Game in progress':next.results.length?'Ready · replay available':'Ready to play';
@@ -137,7 +137,7 @@ async function refresh(){
 }
 
 async function start(all=false){
- try{error(null);stopPlayback();frozen=null;selection=null;step=0;mode='candidate';for(const b of document.querySelectorAll('[data-mode]'))b.classList.toggle('active',b.dataset.mode===mode);$('follow').checked=true;setTab('arena');await post('run',{all,bots:[$('bot-a').value,$('bot-b').value],n:Number($('n').value),clock:Number($('clock').value),pace:Number($('pace').value)/1000});await refresh();}catch(e){error(e.message);}
+ try{error(null);stopPlayback();frozen=null;selection=null;step=0;mode='candidate';for(const b of document.querySelectorAll('[data-mode]'))b.classList.toggle('active',b.dataset.mode===mode);$('follow').checked=true;setTab('arena');await post('run',{all,run_label:$('run-label').value,run_notes:$('run-notes').value,bots:[$('bot-a').value,$('bot-b').value],n:Number($('n').value),clock:Number($('clock').value),pace:Number($('pace').value)/1000});await refresh();}catch(e){error(e.message);}
 }
 $('start').onclick=()=>start();$('round-robin').onclick=()=>start(true);
 $('stop').onclick=async()=>{try{await post('stop');await refresh();}catch(e){error(e.message);}};
@@ -149,7 +149,7 @@ $('previous').onclick=()=>{stopPlayback();selectStep(step-1);};$('next').onclick
 $('seek').oninput=()=>{stopPlayback();selectStep(Number($('seek').value)-1);};
 $('follow').onchange=()=>{stopPlayback();if($('follow').checked)frozen=null;else freezeLive();renderArena();};
 $('play').onclick=()=>{if(playing){stopPlayback();return;}if($('follow').checked)freezeLive();$('follow').checked=false;const h=current().game?.history||[];if(step>=h.length-1)step=0;renderArena();$('play').textContent='Ⅱ Pause';playing=setInterval(()=>{const history=current().game?.history||[];if(step>=history.length-1){stopPlayback();return;}step++;renderArena();},1600);};
-$('download').onclick=()=>{const c=current();if(c.game)download(c.game,'dating-game-replay.json');};
+$('download').onclick=()=>{const c=current();if(c.game)download({...c.game,match_configuration:c.pair.match_configuration||c.game.match_configuration||null},'dating-game-replay.json');};
 $('export-results').onclick=()=>download({results:allResults()},'dating-game-results.json');
 $('import').onclick=()=>$('import-file').click();
 function validateGame(g){if(!g||!Number.isInteger(g.n)||g.n<2||g.n>200||typeof g.person!=='string'||typeof g.matchmaker!=='string'||!Array.isArray(g.history)||g.history.length>20)throw Error('Unsupported replay format.');for(const weights of [g.original_weights,g.final_weights])if(weights&&(!Array.isArray(weights)||weights.length!==g.n||weights.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<-1||v>1)))throw Error('Invalid weights in replay.');for(const row of g.history){if(!Array.isArray(row.candidate)||row.candidate.length!==g.n||row.candidate.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<0||v>1)||!Number.isFinite(Number(row.score))||Number(row.score)<-1||Number(row.score)>1)throw Error('Invalid candidate or score in replay.');if(row.weights&&(!Array.isArray(row.weights)||row.weights.length!==g.n||row.weights.some(v=>typeof v!=='number'||!Number.isFinite(v)||v<-1||v>1)))throw Error('Invalid weights in replay.');}return g;}

@@ -15,7 +15,7 @@ class TournamentDesk:
         self.lock = threading.RLock()
         self.cancel = threading.Event()
         self.status = {'running':False,'stopping':False,'results':[], 'live':None,'active_games':[],
-                       'error':None,'pace':.3,'n':n,'clock':clock,'revision':0}
+                       'match_configuration':{'label':'','notes':''},'error':None,'pace':.3,'n':n,'clock':clock,'revision':0}
         for path in sorted(self.folder.glob('*.json')):
             try:
                 r = json.loads(path.read_text(encoding='utf-8'))
@@ -42,6 +42,9 @@ class TournamentDesk:
         pace = float(data.get('pace',.3))
         if not 2 <= n <= 200 or not 0 < clock <= 3600 or not 0 <= pace <= 3:
             raise ValueError('Use 2–200 attributes, a positive clock, and pace between 0 and 3 seconds.')
+        configuration = {'label':str(data.get('run_label','')).strip(), 'notes':str(data.get('run_notes','')).strip()}
+        if len(configuration['label'])>100 or len(configuration['notes'])>1500:
+            raise ValueError('Run label is limited to 100 characters and notes to 1500.')
         with self.lock:
             if self.status['running']:
                 raise ValueError('A tournament is already running.')
@@ -49,11 +52,11 @@ class TournamentDesk:
             if len(selected)<2:
                 raise ValueError('Select two different bots.')
             self.cancel.clear()
-            self.status.update(running=True,stopping=False,error=None,live=None,pace=pace,n=n,clock=clock)
+            self.status.update(running=True,stopping=False,error=None,live=None,pace=pace,n=n,clock=clock,match_configuration=configuration)
             self.status['revision'] += 1
-        threading.Thread(target=self.run,args=(selected,n,clock),daemon=True).start()
+        threading.Thread(target=self.run,args=(selected,n,clock,configuration),daemon=True).start()
 
-    def run(self,selected,n,clock):
+    def run(self,selected,n,clock,configuration=None):
         try:
             build(selected)
             for i,a in enumerate(selected):
@@ -63,6 +66,8 @@ class TournamentDesk:
                     result = pairing(a,b,n,clock,on_event=self.event,cancel=self.cancel,
                                      pace=lambda:self.status['pace'])
                     stamp = datetime.now().strftime('%Y%m%d_%H%M%S_%f')
+                    result['match_configuration'] = dict(configuration or {}, n=n,clock=clock,
+                        rule_profile='architecture-preview-v0.3', ranking_profile='preview-wins-ties-best')
                     result['id'] = stamp
                     result['saved_at'] = datetime.now().astimezone().isoformat()
                     with self.lock:
@@ -122,7 +127,7 @@ def serve(roster='bots.json',n=20,clock=120,port=8092):
                 return self.send_json({'error':'Origin refused'},403)
             try:
                 length = int(self.headers.get('Content-Length','0'))
-                if not 0 < length <= 4096:
+                if not 0 < length <= 16384:
                     raise ValueError('Invalid request size')
                 data = json.loads(self.rfile.read(length))
                 if self.path == '/api/run':

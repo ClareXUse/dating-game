@@ -38,6 +38,9 @@ Their P roles choose random legal preferences and keep them fixed. Scores are ca
 
 ## Receiving submissions and running classmates
 
+Professor-provided competition settings can be recorded using the [on-site configuration worksheet](docs/ON_SITE_CONFIG.md). **Match settings** accepts a run label and instruction notes alongside n and the clock; dashboard results save this context. Notes do not change scoring or separate official standings.
+
+
 See the [submission and host runbook](docs/HOST_GUIDE.md) for the complete ZIP requirements, submission address, folder placement, roster examples and commands to run received bots. These instructions live here on GitHub; the dashboard is for matches and results.
 
 ## The dashboard
