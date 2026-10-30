@@ -28,7 +28,7 @@ python start.py --bots bots.local.json --port 8092
 
 Use `python3` on macOS/Linux if needed. Open http://127.0.0.1:8092. Without `--bots`, the default sample roster loads.
 
-4. Arena → select aa111 and bb222 → **Start pairing**. Both role assignments run automatically. Compare the winner, best scores and proposal counts. Select either game for replay; expand Match details for a failure reason.
+4. Arena → select aa111 and bb222 → **Start pairing**. Both role assignments run automatically. Compare the winner, best scores and proposal counts. Select either game for replay; read the decision strip for a failure reason.
 5. To add entries, edit the same roster and use **More settings → Rescan bot roster** after any running match finishes. Reloading the browser alone does not rescan. **Every pair** runs all roster pairs; Leaderboard shows saved results. Records live in `results/`.
 
 Before the event, test both roles at n=20, 100 and 200:

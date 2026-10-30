@@ -1,7 +1,7 @@
-import {renderDecision} from './motion.js?v=motion-2';
+import {renderDecision} from './motion.js?v=desk-2';
 import {$,element,fmt,initial,copy,download,post,error,toast} from './helpers.js';
-import {renderCurve,renderAttributes} from './charts.js?v=motion-2';
-import {renderComparison,setupHelp} from './match-view.js?v=motion-2';
+import {renderCurve,renderAttributes} from './charts.js?v=desk-2';
+import {renderComparison,setupHelp} from './match-view.js?v=desk-2';
 setupHelp();
 
 let state={bots:[],results:[],running:false,live:null,active_games:[]};

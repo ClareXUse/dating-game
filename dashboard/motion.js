@@ -37,6 +37,7 @@ export function renderDecision(game,row,previous,live,event,key){
   ];
   stages.forEach(([title,value,note],i)=>{
     const node=element('section','decision-stage'+(i===2&&newBest&&!pending?' improved':''));
+    node.title=note;
     node.append(element('small','',title),element('strong','',value),element('p','',note));track.append(node);
     if(pending&&((i===0&&!c)||(i===1&&c)))node.classList.add('thinking');
     emphasize(node,pending?0:i*160);
