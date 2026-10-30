@@ -1,0 +1,11 @@
+import {standings,eventKey} from '../dashboard/standings.js';
+import assert from 'node:assert/strict';
+const a={bots:['A','B'],winner:'A',games:[{matchmaker:'A',best_score:0.2},{matchmaker:'B',best_score:0.8}],match_configuration:{ranking:'points',win_points:5,tie_points:2,loss_points:0,event:'Final',mode:'official'}};
+assert.equal(standings([a])[0].points,5);
+assert.equal(standings([{...a,winner:'Tie'}])[0].points,2);
+assert.equal(standings([{...a,excluded:true}]).length,0);
+assert.notEqual(eventKey(a),eventKey({...a,match_configuration:{...a.match_configuration,mode:'practice'}}));
+assert.notEqual(eventKey(a),eventKey({...a,id:'import-copy'}));
+assert.equal(standings([{...a,match_configuration:{...a.match_configuration,ranking:'score'}}])[0].name,'B');
+assert.equal(standings([{...a,cancelled:true}]).length,0);
+console.log('Standings regression checks passed');

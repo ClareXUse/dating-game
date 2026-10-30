@@ -206,3 +206,8 @@ The Python referee and templates were exercised locally on Windows with Python 3
 | `docs/` | Protocol, decisions, comparison and validation |
 
 This workflow follows the familiar architecture pattern used in [No Tipping](https://github.com/shela-wu/no_tipping), [Kelly](https://github.com/swapn1ll/Kelly_game) and [Evasion](https://github.com/8steve8/evasion). No participant bot code or private email threads are included.
+
+
+### Competition-day settings
+
+Open **Match settings** to enter the professor's announced attributes, clock, repetitions, points and ranking policy. Choose Official and a unique event ID, then Save settings. Configuration persists across restart and is embedded in every result. The leaderboard separates events and supports excluding a pairing with a recorded reason before a rerun. See the [on-site operating guide](docs/ON_SITE_CONFIG.md) for exact policies and fixed course rules.

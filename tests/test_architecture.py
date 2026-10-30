@@ -143,7 +143,7 @@ for line in sys.stdin:
     def test_cpp(self): self.optional_language('cpp')
     def test_julia(self): self.optional_language('julia')
 
-if __name__=='__main__': unittest.main()
+
 
 
 class AdaptiveExamples(unittest.TestCase):
@@ -212,3 +212,40 @@ class RoleSelection(unittest.TestCase):
             for invalid in ([names[0],names[0]],['missing',names[0]],names[:1]):
                 with self.subTest(invalid=invalid), self.assertRaises(ValueError):
                     desk.start(dict(payload,bots=invalid))
+
+
+class EventConfiguration(unittest.TestCase):
+    def test_repeats_seed_and_exclusion_persist(self):
+        from unittest.mock import patch
+        from referee.server import TournamentDesk
+        with tempfile.TemporaryDirectory() as tmp:
+            desk=TournamentDesk(result_dir=Path(tmp))
+            config={'mode':'official','event':'Final','repetitions':2,'seed':42,'ranking':'points','failure_policy':'exclude'}
+            def fake(*args,**kwargs):
+                return {'bots':['A','B'],'games':[{'failure':{'role':'P'}}], 'winner':'B'}
+            with patch('referee.server.build'),patch('referee.server.pairing',side_effect=fake) as play:
+                desk.run([{'name':'A'},{'name':'B'}],20,10,config)
+            self.assertEqual([c.kwargs['seed'] for c in play.call_args_list],[42,43])
+            records=TournamentDesk(result_dir=Path(tmp)).snapshot()['results']
+            self.assertEqual(len(records),2)
+            self.assertTrue(all(r['excluded'] for r in records))
+            desk.exclude({'id':records[0]['id'],'reason':'Approved rerun'})
+            records=TournamentDesk(result_dir=Path(tmp)).snapshot()['results']
+            self.assertEqual(records[0]['exclusion_reason'],'Approved rerun')
+
+    def test_saved_settings_and_event_policy_lock(self):
+        from unittest.mock import patch
+        from referee.server import TournamentDesk
+        with tempfile.TemporaryDirectory() as tmp:
+            desk=TournamentDesk(result_dir=Path(tmp))
+            data={'all':True,'n':40,'clock':90,'event':'Final','mode':'official','win_points':5}
+            with patch('referee.server.threading.Thread'): desk.start(data)
+            restored=TournamentDesk(result_dir=Path(tmp))
+            self.assertEqual(restored.status['n'],40)
+            self.assertEqual(restored.status['match_configuration']['win_points'],5)
+            restored.status['results']=[{'match_configuration':dict(restored.status['match_configuration'])}]
+            with self.assertRaises(ValueError): restored.start(dict(data,win_points=3))
+            for extra in ({'seed':1.5},{'win_points':float('nan')},{'repetitions':101},{'ranking':'unknown'}):
+                with self.assertRaises(ValueError): restored.start(dict(data,**extra))
+
+if __name__=='__main__': unittest.main()

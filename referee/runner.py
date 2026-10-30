@@ -224,13 +224,14 @@ def game(person, matchmaker, n=20, clock=120, seed=None, on_event=None, cancel=N
         on_event({'phase':'finished','thinking':None,'game':json.loads(json.dumps(result))})
     return result
 
-def pairing(a, b, n=20, clock=120, on_event=None, cancel=None, pace=0):
+def pairing(a, b, n=20, clock=120, on_event=None, cancel=None, pace=0, seed=None):
     games = []
     for number,(person,matchmaker) in enumerate(((a,b),(b,a)),1):
         def report(event):
             if on_event:
                 on_event(dict(event,pairing=[a['name'],b['name']],game_number=number))
-        g = game(person,matchmaker,n,clock,on_event=report,cancel=cancel,pace=pace)
+        g = game(person,matchmaker,n,clock,seed=seed,on_event=report,cancel=cancel,pace=pace)
+        g['seed'] = seed
         games.append(g)
         if g['cancelled']:
             return {'bots':[a['name'],b['name']],'games':games,'winner':'Stopped','cancelled':True}

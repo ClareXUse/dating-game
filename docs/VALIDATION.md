@@ -1,3 +1,13 @@
+# October 30 event configuration verification
+
+- Python suite: 18 tests, 16 passed, 2 skipped because g++ and Julia are unavailable.
+- Added regression coverage for saved settings, event policy locks, repeated runs, seeds and persistent exclusions.
+- Node checks cover event separation, custom points, mean-score ranking and excluded records.
+- Browser smoke test: a separate practice event with two pairings, seed 42, and 5 points per win displayed 10 points for two wins. No existing official records were changed.
+- Fixed course constraints remain fixed. Configurable ranking modes are documented in ON_SITE_CONFIG.md; arbitrary formulas and host resource quotas are not implemented.
+
+---
+
 # Validation status
 
 Latest recorded automated run: October 29, 2026. **16 tests: 14 passed, 2 skipped** (g++ and Julia unavailable). Includes saved on-site configuration and explicit P/M selection order. Python was exercised locally on Windows. C++/Julia, macOS/Linux/crunchy5 and final competition settings remain unverified.

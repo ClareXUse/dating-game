@@ -1,3 +1,4 @@
+import {eventKey,standings} from './standings.js';
 import {renderDecision} from './motion.js?v=grouped-1';
 import {$,element,fmt,initial,copy,download,post,error,toast} from './helpers.js';
 import {renderCurve,renderAttributes} from './charts.js?v=grouped-1';
@@ -6,6 +7,8 @@ setupHelp();
 
 let state={bots:[],results:[],running:false,live:null,active_games:[]};
 let frozen=null,selection=null,step=0,attribute=0,mode='candidate',initialized=false,playing=null,imports=[];
+const configFields=['mode','event','repetitions','seed','win_points','tie_points','loss_points','ranking','failure_policy'];
+
 let lastSignature='',lastResults='',lastGameKey='';
 
 function setTab(tab){
@@ -98,20 +101,20 @@ function renderGameStrip(pair,index,live){
 }
 
 function renderResults(){
- const results=allResults(),rows=new Map();
- for(const r of results){
-  if(r.cancelled||r.winner==='Stopped'||r.games.length!==2)continue;
-  for(const name of r.bots){if(!rows.has(name))rows.set(name,{name,played:0,wins:0,ties:0,losses:0,best:-1});const row=rows.get(name);row.played++;if(r.winner===name)row.wins++;else if(r.winner==='Tie')row.ties++;else row.losses++;for(const g of r.games)if(g.matchmaker===name&&!g.failure)row.best=Math.max(row.best,Number(g.best_score));}
- }
- $('standings').replaceChildren();$('standings-empty').hidden=!!rows.size;
- [...rows.values()].sort((a,b)=>b.wins-a.wins||b.ties-a.ties||b.best-a.best||a.name.localeCompare(b.name)).forEach((r,i)=>{
+ const all=allResults(), selector=$('standings-event'), old=selector.value;
+ const keys=[...new Set(all.map(eventKey))];selector.replaceChildren();
+ for(const key of keys){const o=element('option','',key);o.value=key;selector.append(o);}if(keys.includes(old))selector.value=old;
+ const results=all.filter(r=>eventKey(r)===selector.value),rows=new Map();
+ const ranked=standings(results);
+ $('standings').replaceChildren();$('standings-empty').hidden=!!ranked.length;
+ ranked.forEach((r,i)=>{
    const tr=element('tr'),rank=element('td','muted',i+1),name=element('td'),nameWrap=element('div','table-name');nameWrap.append(element('span','mini-avatar',initial(r.name)),document.createTextNode(r.name));name.append(nameWrap);tr.append(rank,name);
-   for(const v of [r.played,r.wins,r.ties,r.losses,fmt(r.best)])tr.append(element('td','mono',v));$('standings').append(tr);
+   for(const v of [r.played,r.wins,r.ties,r.losses,fmt(r.best),r.points,r.scores?fmt(r.total/r.scores):'—'])tr.append(element('td','mono',v));$('standings').append(tr);
  });
  $('history').replaceChildren();
  for(const r of [...results].reverse()){
    const tr=element('tr');for(const v of [r.bots.join(' vs '),r.games[0]?.n||'—',r.winner,r.games.map(g=>fmt(g.best_score)).join(' / ')])tr.append(element('td','',v));
-   const td=element('td');r.games.forEach((_,i)=>{const b=element('button','',`Game ${i+1}`);b.onclick=()=>openGame(r,i);td.append(b,document.createTextNode(' '));});tr.append(td);$('history').append(tr);
+   const td=element('td');r.games.forEach((_,i)=>{const b=element('button','',`Game ${i+1}`);b.onclick=()=>openGame(r,i);td.append(b,document.createTextNode(' '));});if(r.excluded)td.append(element('span','muted','Excluded: '+r.exclusion_reason));else if(!r.id.startsWith('import-')){const exclude=element('button','','Exclude');exclude.onclick=()=>{exclude.disabled=true;const reason=element('input');reason.placeholder='Exclusion reason';reason.setAttribute('aria-label','Exclusion reason');reason.maxLength=500;const apply=element('button','','Confirm exclusion'),cancel=element('button','','Cancel');cancel.onclick=()=>{reason.remove();apply.remove();cancel.remove();exclude.disabled=false;};apply.onclick=async()=>{if(!reason.value.trim()){reason.focus();return;}try{await post('exclude',{id:r.id,reason:reason.value});await refresh();}catch(e){error(e.message);}};td.append(reason,apply,cancel);reason.focus();};td.append(exclude);}tr.append(td);$('history').append(tr);
  }
 }
 
@@ -120,8 +123,8 @@ async function refresh(){
    const r=await fetch('/api/state',{cache:'no-store'});if(!r.ok)throw Error('Referee unavailable');const next=await r.json();const wasRunning=state.running;state=next;
    const rosterKey=next.bots.join('|');
    if($('bot-a').dataset.roster!==rosterKey){for(const id of ['bot-a','bot-b']){const old=$(id).value;$(id).replaceChildren();for(const name of next.bots){const o=element('option','',name);o.value=name;$(id).append(o);}if(next.bots.includes(old))$(id).value=old;}if($('bot-b').value===$('bot-a').value)$('bot-b').selectedIndex=1;$('bot-a').dataset.roster=rosterKey;}
-   if(!initialized){$('run-label').value=next.match_configuration?.label||'';$('run-notes').value=next.match_configuration?.notes||'';$('n').value=next.n;$('clock').value=next.clock;$('pace').value=Math.round(next.pace*1000);initialized=true;}
-   for(const id of ['start','round-robin','rescan','bot-a','bot-b','n','clock','run-label','run-notes'])$(id).disabled=next.running;
+   if(!initialized){for(const id of configFields){const v=next.match_configuration?.[id];if(v!==undefined)$(id).value=v??'';}$('run-label').value=next.match_configuration?.label||'';$('run-notes').value=next.match_configuration?.notes||'';$('n').value=next.n;$('clock').value=next.clock;$('pace').value=Math.round(next.pace*1000);initialized=true;}
+   for(const id of ['start','round-robin','rescan','bot-a','bot-b','n','clock','run-label','run-notes','save-settings',...configFields])$(id).disabled=next.running;
    $('stop').disabled=!next.running||next.stopping;
    $('run-status').classList.toggle('running',next.running);
    $('status-text').textContent=next.stopping?'Stopping…':next.running?'Game in progress':next.results.length?'Ready · replay available':'Ready to play';
@@ -131,14 +134,16 @@ async function refresh(){
      if(wasRunning&&!next.running&&$('follow').checked&&next.results.length&&next.live){const latest=next.results.at(-1);selection={id:latest.id,index:Math.max(0,latest.games.length-1)};}
      renderArena();
    }
-   const resultSignature=next.results.map(r=>r.id).join('|')+'|'+imports.length;
+   const resultSignature=next.results.map(r=>r.id).join('|')+'|'+imports.length+'|'+next.revision;
    if(resultSignature!==lastResults){lastResults=resultSignature;renderResults();}
  }catch(e){error('Cannot reach the local referee. Start python3 start.py, then reload.');$('status-text').textContent='Disconnected';}
 }
 
-async function start(all=false){
- try{error(null);stopPlayback();frozen=null;selection=null;step=0;mode='candidate';for(const b of document.querySelectorAll('[data-mode]'))b.classList.toggle('active',b.dataset.mode===mode);$('follow').checked=true;setTab('arena');await post('run',{all,run_label:$('run-label').value,run_notes:$('run-notes').value,bots:[$('bot-a').value,$('bot-b').value],n:Number($('n').value),clock:Number($('clock').value),pace:Number($('pace').value)/1000});await refresh();}catch(e){error(e.message);}
+async function start(all=false,saveOnly=false){
+ try{error(null);stopPlayback();frozen=null;selection=null;step=0;mode='candidate';for(const b of document.querySelectorAll('[data-mode]'))b.classList.toggle('active',b.dataset.mode===mode);$('follow').checked=true;setTab('arena');await post(saveOnly?'settings':'run',{...Object.fromEntries(configFields.map(id=>[id,['repetitions','win_points','tie_points','loss_points','seed'].includes(id)?(id==='seed'&&$(id).value===''?null:Number($(id).value)):$(id).value])),all,run_label:$('run-label').value,run_notes:$('run-notes').value,bots:[$('bot-a').value,$('bot-b').value],n:Number($('n').value),clock:Number($('clock').value),pace:Number($('pace').value)/1000});await refresh();if(saveOnly)toast('Settings saved');}catch(e){error(e.message);}
 }
+$('standings-event').onchange=renderResults;
+$('save-settings').onclick=()=>start(false,true);
 $('start').onclick=()=>start();$('round-robin').onclick=()=>start(true);
 $('stop').onclick=async()=>{try{await post('stop');await refresh();}catch(e){error(e.message);}};
 $('rescan').onclick=async()=>{try{await post('rescan');await refresh();toast('Bot roster refreshed');}catch(e){error(e.message);}};
