@@ -82,3 +82,24 @@ body{background:var(--bg)}.topbar{background:var(--bg);border-color:#ffffff0d}.b
 .zero-value{position:absolute;top:calc(50% - 1px);height:2px;left:0;right:0}.unknown-value{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:var(--muted);font-size:11px}
 .group-index{display:block;background:none;border:0;padding:8px 0 2px;width:100%;font:11px ui-monospace,monospace;color:var(--muted)}.selected .group-index{color:var(--text);font-weight:700}
 @media(max-width:700px){.grouped-plot{min-width:calc(28px + var(--count)*42px)}.attribute-groups{grid-template-columns:repeat(var(--count),minmax(42px,1fr))}.group-index{min-height:44px}}
+/* Give the grouped chart the full desk width and scores their own readable strip. */
+.app-shell{max-width:1600px;padding:18px 28px;gap:18px}
+.pairing-summary{padding:4px 6px 20px}.comparison-row{gap:30px}.competitor strong{font-size:15px}.competitor small{font-size:12px}.comparison-score{font-size:32px}
+.arena-frame{padding:22px;gap:20px}.game-context{gap:28px}.player-name{font-size:14px}.game-context .player-name{font-size:14px}.game-context .clock{font-size:11px!important}
+#decision-flow{padding:0 0 12px;border-bottom:1px solid #ffffff0d}.decision-stage strong{font-size:14px}.decision-stage small{font-size:12px}.decision-caption{font-size:12px}
+.viz-grid{display:flex;flex-direction:column;gap:22px}
+.inspector{order:-1;display:grid;grid-template-columns:minmax(120px,.7fr) minmax(200px,1fr) minmax(170px,1fr) minmax(260px,1.5fr);gap:24px;align-items:center;padding:0 0 20px;border:0;border-bottom:1px solid #ffffff12}
+.score-primary h2{font-size:12px;margin-bottom:5px}.score-primary .score{font-size:38px;line-height:1.1}
+.inspector .score-sub{margin:0;padding:0;gap:20px;border:0}.inspector .score-sub small{font-size:12px}.inspector .score-sub strong{font-size:23px}
+.inspector .preference-change{grid-column:auto;margin:0;padding:0 0 0 20px;border:0;border-left:1px solid #ffffff12;display:block}.preference-change small{font-size:12px}.preference-change strong{display:inline-block;font-size:23px;margin-top:3px}.inspector .preference-change p{font-size:12px;margin-top:5px}
+.inspector .equation{grid-column:auto;margin:0;padding:0 0 0 24px;border:0;border-left:1px solid #ffffff12}.inspector .equation>strong{font-size:12px}.evaluation-row{font-size:12px}.score-equation{font-size:12px;margin-top:8px}
+.pane-head{padding:0 0 12px}.pane-head h2{font-size:16px}.profile-caption{font-size:12px}
+.grouped-attributes{padding:14px 0 8px}.grouped-plot{min-width:calc(36px + var(--count)*48px);padding-top:8px}.grouped-axis{width:36px;height:210px;font-size:11px}
+.attribute-groups{grid-template-columns:repeat(var(--count),minmax(48px,1fr))}.attribute-group{padding:0 7px}.grouped-bars{height:210px;gap:3px}.group-index{font-size:12px;padding:12px 0 6px}
+#attribute-legend{padding:8px 0 12px;gap:20px;font-size:12px}.attribute-detail{padding:12px 0;font-size:13px;min-height:44px}
+.arena-frame>.replay-controls{padding:12px 14px;gap:14px}.replay-controls button{min-height:36px;font-size:13px}.counter,.follow{font-size:12px}
+.analysis-grid{gap:30px;padding-top:18px}.curve-head{padding-bottom:12px}.curve-head h2,.change-log h3{font-size:15px}.chart{height:155px}.change-log{padding-left:28px}.change-log .table-scroll{max-height:148px}.change-log td,.change-log th{font-size:12px;padding:8px}.change-log p,.scoring-note summary{font-size:12px}.change-log caption{font-size:11px;padding:6px 0}.notice{margin-top:12px}
+@media(max-width:1100px){.app-shell{padding:16px}.arena-frame{padding:18px}.inspector{grid-template-columns:1fr 1fr;gap:18px}.inspector .preference-change{padding:14px 0 0;border:0;border-top:1px solid #ffffff12}.inspector .equation{padding:14px 0 0;border:0;border-top:1px solid #ffffff12}.analysis-grid{gap:20px}}
+@media(max-width:700px){.app-shell{padding:12px;gap:14px}.arena-frame{padding:14px;gap:18px}.comparison-row{gap:10px}.competitor strong{font-size:12px}.competitor small{font-size:10px}.comparison-score{font-size:26px}.game-context{gap:14px}.inspector{grid-template-columns:1fr 1fr;gap:16px}.inspector .score-sub{gap:10px}.inspector .score-sub strong{font-size:18px}.inspector .equation{padding:14px 0 0}.inspector .preference-change{padding:14px 0 0}.score-primary .score{font-size:30px}.grouped-bars,.grouped-axis{height:180px}.pane-head h2{font-size:14px}.profile-caption{font-size:11px}.analysis-grid{grid-template-columns:1fr}.change-log{padding:16px 0 0}.change-log .table-scroll{max-height:160px}#attribute-legend{gap:10px;font-size:11px}.replay-controls button{min-height:44px}}
+.viz-grid,.visual-pane,.grouped-attributes,.inspector,.analysis-grid{min-width:0}.grouped-attributes{max-width:100%}
+@media(max-width:700px){.inspector{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.inspector .equation{grid-column:1/-1}.inspector .preference-change{grid-column:1/-1}.inspector .score-sub{min-width:0}}
