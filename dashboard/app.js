@@ -1,7 +1,7 @@
-import {renderDecision} from './motion.js?v=quiet-2';
+import {renderDecision} from './motion.js?v=matrix-1';
 import {$,element,fmt,initial,copy,download,post,error,toast} from './helpers.js';
-import {renderCurve,renderAttributes} from './charts.js?v=quiet-2';
-import {renderComparison,setupHelp} from './match-view.js?v=quiet-2';
+import {renderCurve,renderAttributes} from './charts.js?v=matrix-1';
+import {renderComparison,setupHelp} from './match-view.js?v=matrix-1';
 setupHelp();
 
 let state={bots:[],results:[],running:false,live:null,active_games:[]};

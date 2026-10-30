@@ -42,44 +42,42 @@ export function renderAttributes(game,row,mode,selected,onSelect){
   const animate=root.dataset.motionKey!==animationKey&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
   root.dataset.motionKey=animationKey;
   const weights=row?.weights||(row?.round===game?.history?.at(-1)?.round?game?.final_weights:null);
-  const signed=mode!=='candidate';
-  const values=mode==='weights'?weights:mode==='contributions'?weights?.map((w,i)=>w*(row?.candidate?.[i]||0)):row?.candidate||game?.pending_candidate;
-  $('attributes-title').textContent=mode==='weights'?"P's preferences":mode==='contributions'?'Score contributions':'Candidate profile';
-  const locked=signed&&!weights;
-  $('reveal-note').hidden=!locked;root.hidden=locked;
-  $('reveal-note').textContent=game?.original_weights?'This older replay does not contain preference weights for this proposal. Run a new pairing to capture every change.':'Preference values stay hidden while a game is running. After the game, replay any proposal to see the weights and each attribute’s contribution.';
-  root.classList.toggle('dense',n>40);root.classList.toggle('signed',signed);root.classList.toggle('contributions',mode==='contributions');root.replaceChildren();
-  const priorValues=mode==='weights'?priorWeights:mode==='contributions'?previous?.weights?.map((w,i)=>w*previous.candidate[i]):previous?.candidate;
-  const max=signed?Math.max(.0001,...(values||[]).map(Math.abs),...(priorValues||[]).map(Math.abs)):1;
-  if(!locked)for(let i=0;i<n;i++){
-    const v=values?.[i],changed=!!weights&&row?.changed?.includes(i);
-    const prior=mode==='candidate'?previous?.candidate?.[i]:mode==='weights'?priorWeights?.[i]:previous?.weights?.[i]*previous?.candidate?.[i];
-    const moved=Number.isFinite(prior)&&v!==prior;
-    const b=element('button','attribute'+(i===selected?' selected':'')+(changed?' changed':'')+(moved?' value-changed':''));b.type='button';
-    b.setAttribute('aria-label',`Attribute ${i+1}: ${v==null?'not proposed':v}${changed?', preference changed':''}`);
-    b.append(element('span','index',String(i+1).padStart(2,'0')));
-    const track=element('span','bar-track'),fill=element('span','bar-fill');
-    fill.style.height=v==null?'0%':`${Math.abs(v)/max*(signed?45:100)}%`;
-    if(signed){fill.style.bottom=v<0?'auto':'50%';fill.style.top=v<0?'50%':'auto';}
-    fill.style.background=signed&&v<0?'var(--coral)':'var(--mint)';
-    if(moved){
-      const ghost=element('span','bar-before');ghost.style.bottom=signed?'50%':'0';
-      ghost.style.height=`${Math.abs(prior)/max*(signed?45:100)}%`;
-      if(signed&&prior<0){ghost.style.top='50%';ghost.style.bottom='auto';}
-      track.append(ghost);
-      b.title=`Attribute ${i+1}: ${fmt(prior)} → ${fmt(v)}`;
+  const candidate=row?.candidate||game?.pending_candidate;
+  $('attributes-title').textContent='Attributes × preferences = contributions';
+  $('reveal-note').hidden=true;root.hidden=false;
+  root.className='attribute-matrix';root.replaceChildren();
+  const scale=Math.max(.0001,...(weights||[]).map(Math.abs),...(priorWeights||[]).map(Math.abs));
+  const columns=element('div','matrix-columns');columns.style.setProperty('--count',n);root.append(columns);
+  const header=element('div','matrix-row matrix-header');header.append(element('span','matrix-label','Attribute #'));
+  for(let i=0;i<n;i++)header.append(element('span','matrix-index'+(i===selected?' selected':''),String(i+1).padStart(2,'0')));
+  columns.append(header);
+  const lanes=[
+    {name:'Attributes',hint:'M’s candidate · 0 to 1',values:candidate,prior:previous?.candidate,signed:false},
+    {name:'Preferences',hint:'P’s weight · ±'+fmt(scale),values:weights,prior:priorWeights,signed:true},
+    {name:'Contributions',hint:'Value × weight · ±'+fmt(scale),values:weights&&candidate?weights.map((w,i)=>w*candidate[i]):null,prior:previous?.weights?.map((w,i)=>w*previous.candidate[i]),signed:true}
+  ];
+  lanes.forEach(lane=>{
+    const line=element('div','matrix-row'+(lane.signed?' signed':''));
+    const label=element('div','matrix-label');label.append(element('strong','',lane.name),element('small','',lane.hint));line.append(label);
+    if(!lane.values){const locked=element('div','matrix-locked',lane.signed?'Hidden until the game ends':'Waiting for a candidate');locked.style.gridColumn='2 / -1';line.append(locked);columns.append(line);return;}
+    for(let i=0;i<n;i++){
+      const v=lane.values[i],prior=lane.prior?.[i],moved=Number.isFinite(prior)&&v!==prior;
+      const b=element('button','attribute'+(i===selected?' selected':'')+(moved?' value-changed':''));b.type='button';
+      b.setAttribute('aria-label',`${lane.name}, attribute ${i+1}: ${fmt(v)}`);
+      b.title=`${lane.name} ${i+1}: ${moved?fmt(prior)+' → ':''}${fmt(v)}`;
+      const track=element('span','bar-track'),fill=element('span','bar-fill');
+      const max=lane.signed?scale:1,factor=lane.signed?45:100;
+      fill.style.height=`${Math.abs(v)/max*factor}%`;
+      if(lane.signed){fill.style.bottom=v<0?'auto':'50%';fill.style.top=v<0?'50%':'auto';}
+      fill.style.background=v<0?'var(--coral)':'var(--mint)';
+      if(moved){const ghost=element('span','bar-before');ghost.style.height=`${Math.abs(prior)/max*factor}%`;ghost.style.bottom=lane.signed?'50%':'0';if(lane.signed&&prior<0){ghost.style.top='50%';ghost.style.bottom='auto';}track.append(ghost);}
+      track.append(fill);b.append(track,element('span','value',short(v)));b.onclick=()=>onSelect(i);line.append(b);
+      if(animate&&moved)fill.animate([{height:`${Math.abs(prior)/max*factor}%`},{height:fill.style.height}],{duration:480,easing:'cubic-bezier(.2,0,0,1)'});
     }
-    track.append(fill);b.append(track,element('span','value',v==null?'—':mode==='contributions'?(v>0?'+':'')+fmt(v):short(v)));
-    b.addEventListener('click',()=>onSelect(i));root.append(b);
-    if(animate&&moved){
-      fill.animate([{height:`${Math.abs(prior)/max*(signed?45:100)}%`},{height:fill.style.height}],{duration:480,easing:'cubic-bezier(.2,0,0,1)'});
-      b.animate([{backgroundColor:'#304b51'},{backgroundColor:'transparent'}],{duration:850});
-    }
-  }
+    columns.append(line);
+  });
   const legend=$('attribute-legend');legend.replaceChildren();
-  const a=element('span');a.append(element('i','swatch'),document.createTextNode(signed?(mode==='weights'?'Positive preference':'Raises score'):'Attribute value (0 → 1)'));
-  const b=element('span');b.append(element('i','swatch coral'),document.createTextNode(signed?(mode==='weights'?'Negative preference':'Lowers score'):'P changed this preference'));
-  legend.append(a,b,element('span','',signed?`Zero at center · scale ±${fmt(max)}`:'Dashed outline = previous value · click to inspect'));
+  legend.append(element('span','','Green: positive · Pink: negative'),element('span','','Dashed: previous value · click a column for exact values'));
   const detail=$('attribute-detail');detail.replaceChildren();
   if(!row?.candidate){detail.textContent='Select an attribute to see how the score is calculated.';}
   else if(weights){const i=Math.min(selected,n-1),c=row.candidate[i],w=weights[i];detail.append(element('strong','',`Attribute ${String(i+1).padStart(2,'0')}`),document.createTextNode(`  ·  ${fmt(c)} × ${fmt(w)} = ${fmt(c*w)} contribution${row.changed?.includes(i)?'  ·  P changed this weight':''}`));}

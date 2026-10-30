@@ -68,3 +68,12 @@ body{background:var(--bg)}.topbar{background:var(--bg);border-color:#ffffff0d}.b
 @media(min-width:701px){.attributes,.attributes.dense{height:158px;max-height:158px}.change-log{max-height:none;overflow:visible}.change-log .table-scroll{max-height:72px}.scoring-note[open]{padding-top:4px}}
 @media(min-width:1500px) and (min-height:900px){.attributes,.attributes.dense{height:214px;max-height:214px}.change-log .table-scroll{max-height:120px}}
 @media(max-width:700px){.topbar .external>a:not(.rules-link){display:inline;font-size:12px}}
+/* Three aligned plots share attribute columns; signed plots share one scale. */
+.attribute-matrix{overflow:auto;max-height:300px;scrollbar-color:#51697b transparent;padding:3px 0 6px}
+.matrix-columns{min-width:calc(126px + var(--count)*32px)}
+.matrix-row{display:grid;grid-template-columns:126px repeat(var(--count),minmax(32px,1fr));align-items:center;gap:0;min-height:64px}
+.matrix-header{min-height:22px}.matrix-index{text-align:center;font:11px ui-monospace,monospace;color:var(--muted)}.matrix-index.selected{color:var(--mint);font-weight:700}
+.matrix-label{position:sticky;left:0;z-index:2;background:var(--surface);padding-right:10px;font-size:11px;color:var(--muted)}.matrix-label strong{display:block;font-size:12px;color:var(--text);font-weight:500}.matrix-label small{display:block;font-size:10px;line-height:1.5;margin-top:3px}
+.matrix-row .attribute{height:60px;padding:3px 2px;gap:3px}.matrix-row .bar-track{height:35px;flex:none}.matrix-row .bar-fill{left:25%;right:25%}.matrix-row .value{font-size:10px}.matrix-row+.matrix-row{border-top:1px solid #ffffff08}.matrix-locked{font-size:12px;color:var(--muted);padding:15px;border:1px dashed #344955;border-radius:5px}
+@media(max-width:700px){.matrix-columns{min-width:calc(110px + var(--count)*34px)}.matrix-row{grid-template-columns:110px repeat(var(--count),minmax(34px,1fr))}.matrix-label{padding-right:7px}}
+@media(min-width:701px) and (max-height:900px){.matrix-row{min-height:54px}.matrix-header{min-height:20px}.matrix-row .attribute{height:52px}.matrix-row .bar-track{height:29px}}

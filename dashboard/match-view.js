@@ -1,4 +1,4 @@
-import {emphasize} from './motion.js?v=quiet-2';
+import {emphasize} from './motion.js?v=matrix-1';
 import {$,element,fmt,initial} from './helpers.js';
 
 // The referee owns the outcome. Replay position never changes the pairing result.
