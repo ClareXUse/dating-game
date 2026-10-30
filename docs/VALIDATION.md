@@ -1,3 +1,11 @@
+# October 30 weight-bound update
+
+- Applied a 5% original-relative weight bound following Dennis's email clarification; retained the per-response coordinate limit and persistent edits.
+- Python suite: 19 tests, 17 passed, 2 skipped (g++ and Julia unavailable). Tests cover the exact bound, rejection above the bound, no compounding, per-response coordinate counts, small/zero weights and persistent updates.
+- Node standings regression checks passed. Historical records were not rewritten; new official events cannot mix older rule profiles.
+
+---
+
 # October 30 event configuration verification
 
 - Python suite: 18 tests, 16 passed, 2 skipped because g++ and Julia are unavailable.

@@ -35,3 +35,8 @@ Python strategy functions receive the message dictionary unchanged. C++ and Juli
 The role process starts once per game and is terminated after completion or failure. Both role processes are fresh for the second game. EOF is the end-of-game signal; there is no final-score callback. The referee caps a reply at 65,536 bytes including its newline, rejects non-object JSON and non-finite values, and charges wall time from the request until the reply arrives. Wrapper/child communication is part of that time. No cross-game disk memory is permitted by the preview rules, though the local runner does not sandbox filesystem access.
 
 For diagnostics, run your strategy manually with stderr visible. The tournament runner discards stderr to prevent output accumulation. Full result files include preference vectors only after the game; do not distribute those records during an ongoing competition without the players' agreement.
+
+
+## October 30 weight-update bound
+
+Every updated weight must be within 5% of its original magnitude: `abs(new - original) <= 0.05 * abs(original)`. At most `floor(n/20)` coordinates may differ from the previous turn. Normalization and two-decimal precision remain required; `{}` keeps the current vector. See [rule clarification](RULES.md).

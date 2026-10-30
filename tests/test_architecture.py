@@ -30,16 +30,26 @@ class Rules(unittest.TestCase):
             setup({'weights':[1,-1],'ideal':[.9,0],'anti_ideal':[0,1]},2)
 
     def test_modifications_relative_to_original(self):
-        original = weights([.5,.5,-.5,-.5]+[0]*36,40)
-        valid = [.6,.4,-.5,-.5]+[0]*36
-        changed = update({'weights':valid},original,original)
-        self.assertEqual(changed[:2],[D('.6'),D('.4')])
+        original=weights([.4,.6,-.4,-.6]+[0]*36,40)
+        changed=update({'weights':[.42,.58,-.4,-.6]+[0]*36},original,original)
+        self.assertEqual(changed[:2],[D('.42'),D('.58')])
+        for new in ([.43,.57,-.4,-.6]+[0]*36, [.44,.56,-.4,-.6]+[0]*36):
+            with self.assertRaises(ValueError): update({'weights':new},original,changed)
         with self.assertRaises(ValueError):
-            update({'weights':[.7,.3,-.5,-.5]+[0]*36},original,changed)
+            update({'weights':[.42,.58,-.42,-.58]+[0]*36},original,original)
+        # Edits carry over; the coordinate limit is per response, not global.
+        accumulated=update({'weights':[.42,.58,-.42,-.58]+[0]*36},original,changed)
+        self.assertEqual(sum(a!=b for a,b in zip(accumulated,original)),4)
+        self.assertEqual(update({},original,accumulated),accumulated)
         with self.assertRaises(ValueError):
-            update({'weights':[.6,.4,-.6,-.4]+[0]*36},original,original)
-        with self.assertRaises(ValueError):
-            update({'weights':[.99,-.99]},weights([1,-1],2),weights([1,-1],2))
+            update({'weights':[.4,.6,-.42,-.58]+[0]*36},original,changed)
+
+    def test_small_and_zero_weights_cannot_escape_five_percent_bound(self):
+        original=weights([.1]*10+[-.1]*10+[0]*20,40)
+        for a,b in ((0,1),(0,20)):
+            new=list(original);new[a]-=D('.01');new[b]+=D('.01')
+            with self.assertRaises(ValueError): update({'weights':new},original,original)
+
 
 class Integration(unittest.TestCase):
     def test_live_redaction_and_replay_contributions(self):
