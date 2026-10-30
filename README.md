@@ -47,7 +47,7 @@ See the [submission and host runbook](docs/HOST_GUIDE.md) for the complete ZIP r
 
 ![Dating Game tournament desk](docs/screenshots/dashboard.jpg)
 
-1. **Set up:** choose two bots, 2–200 attributes, the thinking clock and a watch pace. **Start pairing** plays both role assignments; **Every pair** runs the full roster.
+1. **Set up:** choose the Person (P) strategy and Matchmaker (M) strategy for Game 1, then 2–200 attributes, the thinking clock and a watch pace. **Start pairing** plays both role assignments; **Every pair** runs the full roster.
 2. **Know the outcome:** the score comparison shows both programs’ best results as M, the pairing winner and the tie-break rule. **How to play** explains both roles, the scoring loop and victory in English.
 3. **Watch live:** attribute bars, proposal progress, score history and separate P/M clocks update during play. **Stop** preserves completed proposals. Watch pace is outside the thinking clock.
 4. **Understand the score:** click an attribute to inspect its contribution. After a game, switch to **Preferences** for signed weights at each proposal, or **Contributions** to see which attributes raise or lower the score around a common zero line. The inspector shows the positive and negative sums and their final arithmetic. Weights stay hidden during active play.

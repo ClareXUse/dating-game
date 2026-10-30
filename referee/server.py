@@ -48,7 +48,17 @@ class TournamentDesk:
         with self.lock:
             if self.status['running']:
                 raise ValueError('A tournament is already running.')
-            selected = self.bots if data.get('all') else [b for b in self.bots if b['name'] in data['bots']]
+            if data.get('all'):
+                selected = self.bots
+            else:
+                names = data.get('bots')
+                if not isinstance(names,list) or len(names)!=2 or any(not isinstance(name,str) for name in names) or names[0]==names[1]:
+                    raise ValueError('Choose different strategies for Person (P) and Matchmaker (M).')
+                roster = {b['name']: b for b in self.bots}
+                if any(name not in roster for name in names):
+                    raise ValueError('A selected strategy is not in the roster. Rescan and select again.')
+                # pairing uses its first argument as P in game 1; preserve UI order.
+                selected = [roster[name] for name in names]
             if len(selected)<2:
                 raise ValueError('Select two different bots.')
             self.cancel.clear()

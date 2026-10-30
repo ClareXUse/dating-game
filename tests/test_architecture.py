@@ -195,3 +195,20 @@ class OnSiteConfiguration(unittest.TestCase):
             desk.status['running'] = False
             payload['run_label'] = 'x'*101
             with self.assertRaises(ValueError): desk.start(payload)
+
+class RoleSelection(unittest.TestCase):
+    def test_selected_order_is_preserved_and_invalid_roles_rejected(self):
+        from unittest.mock import patch
+        from referee.server import TournamentDesk
+        with tempfile.TemporaryDirectory() as tmp:
+            desk = TournamentDesk(result_dir=Path(tmp))
+            names = [b['name'] for b in desk.bots]
+            payload = {'n':20, 'clock':120, 'bots':list(reversed(names[:2]))}
+            with patch('referee.server.threading.Thread') as worker:
+                desk.start(payload)
+                selected = worker.call_args.kwargs['args'][0]
+                self.assertEqual([b['name'] for b in selected],payload['bots'])
+            desk.status['running'] = False
+            for invalid in ([names[0],names[0]],['missing',names[0]],names[:1]):
+                with self.subTest(invalid=invalid), self.assertRaises(ValueError):
+                    desk.start(dict(payload,bots=invalid))
