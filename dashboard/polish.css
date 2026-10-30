@@ -87,3 +87,17 @@ dialog::backdrop{background:#071019b8;backdrop-filter:blur(5px)}.dialog-head{dis
 button.primary:hover:not(:disabled){background:#7ceccc;color:#102a25}
 
 .host-guide{grid-template-columns:1fr;max-width:1000px}.host-guide .handoff-rail{display:none}.host-guide .guide-step li{margin:14px 0;line-height:1.8;color:#bac8d4}.audience-tabs{margin-bottom:16px}.host-guide .guide-step p{line-height:1.8}
+
+/* Motion follows the proposal, response, score sequence. */
+#decision-flow{padding:20px 24px 0}.decision-caption{color:#9eb1c2;font-size:12px;margin-bottom:12px}
+.decision-track{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.decision-stage{position:relative;border-left:2px solid #34505e;padding:0 0 0 14px;min-width:0}
+.decision-stage small{color:#96adbe;font-size:11px}.decision-stage strong{display:block;font-size:18px;line-height:1.4;margin-top:6px;color:#e7f1f6}
+.decision-stage p{font-size:11px;line-height:1.5;color:#91a5b6;margin:7px 0 0}.decision-stage.improved{border-color:#5de2bd}.decision-stage.improved strong{color:#5de2bd}
+.decision-stage.thinking:before{content:'';position:absolute;left:-4px;top:0;width:6px;height:6px;background:#5de2bd;border-radius:50%;animation:thinking-pulse 1.2s ease-in-out infinite}
+@keyframes thinking-pulse{0%,100%{transform:translateY(0);box-shadow:0 0 0 0 #5de2bd33}50%{transform:translateY(24px);box-shadow:0 0 0 5px #5de2bd00}}
+.bar-before{position:absolute;left:12%;right:12%;border:1px dashed #b3c5ce;opacity:.55;pointer-events:none;min-height:1px}.bar-fill{z-index:1}.attribute.value-changed .index{color:#5de2bd}.change-log{padding:20px 24px;border-top:1px solid #2b3a4a}.change-log h3{font-size:16px;margin:0 0 14px}.change-log p{font-size:12px;line-height:1.7;color:#a6b8c7}.change-log table{font-size:12px}.change-log .weight-impact{color:#5de2bd}
+@media(max-width:700px){#decision-flow{padding:18px 14px 0}.decision-track{gap:12px;grid-template-columns:1fr}.decision-stage{display:grid;grid-template-columns:110px 1fr;column-gap:8px}.decision-stage strong{margin:0;font-size:15px}.decision-stage p{grid-column:2;margin-top:4px}.change-log{padding:16px}}
+@media(prefers-reduced-motion:reduce){.decision-stage.thinking:before{animation:none}*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+
+.contribution-meter>span{transition:width 450ms cubic-bezier(.2,0,0,1)}

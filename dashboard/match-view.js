@@ -1,8 +1,10 @@
+import {emphasize} from './motion.js?v=motion-2';
 import {$,element,fmt,initial} from './helpers.js';
 
 // The referee owns the outcome. Replay position never changes the pairing result.
 export function renderComparison(pair,live){
-  const root=$('pairing-summary');root.replaceChildren();
+  const root=$('pairing-summary'),oldOutcome=root.querySelector('.pairing-outcome strong')?.textContent;
+  const oldScores=[...root.querySelectorAll('.comparison-score')].map(e=>e.textContent);root.replaceChildren();
   const finished=!!pair.winner&&!pair.cancelled&&pair.games.length===2&&pair.winner!=='Imported replay';
   const heading=element('div','comparison-heading','MATCH RESULT');
   const row=element('div','comparison-row');
@@ -14,13 +16,13 @@ export function renderComparison(pair,live){
     const score=element('b','comparison-score',game?.history?.length?fmt(game.best_score):'—');
     if(game?.failure)score.textContent=game.failure.role==='M'?'M failed':'P failed';
     block.classList.toggle('winner',finished&&pair.winner===name);
-    block.append(badge,info,score);row.append(block);
+    block.append(badge,info,score);row.append(block);if(oldScores[i]!==score.textContent)emphasize(score);
   });
   const outcome=element('div','pairing-outcome');
   outcome.append(element('strong','',pair.cancelled||pair.winner==='Stopped'?'Pairing stopped':finished?pair.winner==='Tie'?'Pairing tied':`${pair.winner} wins`:live?'Pairing in progress':'Two roles. Two games.'));
   const failed=pair.games.some(g=>g?.failure);
   outcome.append(element('span','',failed?'A role failure takes priority over the numeric score.':'Higher best score wins.'),element('small','',pair.cancelled?'Partial pairings are excluded from standings.':'Equal score → fewer proposals.'));
-  row.insertBefore(outcome,row.children[1]);root.append(heading,row);
+  row.insertBefore(outcome,row.children[1]);root.append(heading,row);if(oldOutcome!==outcome.firstChild.textContent)emphasize(outcome);
 }
 
 const instructions={

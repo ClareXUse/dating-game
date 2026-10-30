@@ -1,6 +1,7 @@
+import {renderDecision} from './motion.js?v=motion-2';
 import {$,element,fmt,initial,copy,download,post,error,toast} from './helpers.js';
-import {renderCurve,renderAttributes} from './charts.js';
-import {renderComparison,setupHelp} from './match-view.js?v=english-1';
+import {renderCurve,renderAttributes} from './charts.js?v=motion-2';
+import {renderComparison,setupHelp} from './match-view.js?v=motion-2';
 setupHelp();
 
 let state={bots:[],results:[],running:false,live:null,active_games:[]};
@@ -44,13 +45,13 @@ function renderArena(){
   const p=g?.person||pair.bots[0],m=g?.matchmaker||pair.bots[1];
   $('p-name').textContent=p;$('m-name').textContent=m;$('p-avatar').textContent=initial(p);$('m-avatar').textContent=initial(m);
   $('game-label').textContent=`GAME ${index+1} OF 2`;
-  $('turn-label').textContent=live?state.live.phase==='thinking'?`${state.live.thinking==='P'?'P is considering the proposal':'M is proposing a candidate'}…`:state.live.phase==='starting'?'Starting the bots…':'M is learning from the feedback.':g?.cancelled?'Run stopped.':g?.failure?`${g.failure.role} failed: ${g.failure.reason}`:g?'Replay · preference weights revealed.':'Ready for the first proposal.';
+  $('turn-label').textContent=live?state.live.phase==='thinking'?`${state.live.thinking==='P'?'P is considering the proposal':'M is proposing a candidate'}…`:state.live.phase==='starting'?'Starting the bots…':'M is learning from the feedback.':g?.cancelled?'Run stopped.':g?.failure?`${g.failure.role} failed: ${g.failure.reason}`:g?(g.original_weights?'Replay · preference weights revealed.':'Replay · preferences remain hidden.'):'Ready for the first proposal.';
   $('proposal-label').textContent=`Proposal ${String(count).padStart(2,'0')} of 20`;
   $('proposal-counter').textContent=`${count} / 20`;$('progress-fill').style.width=count/20*100+'%';
   $('current-score').textContent=fmt(row?.score);$('current-score').classList.toggle('negative',Number(row?.score)<0);
   $('best-score').textContent=h.length?fmt(Math.max(...h.slice(0,step+1).map(r=>Number(r.score)))):'—';
-  const changed=row?.changed||[];$('change-count').textContent=changed.length;
-  $('change-text').textContent=changed.length?`P updated ${changed.length} ${changed.length===1?'preference':'preferences'} on this proposal.`:`P kept the current preferences.${g?' Limit: '+Math.floor(g.n/20)+' changes per turn.':''}`;
+  const changed=row?.weights?(row.changed||[]):[];$('change-count').textContent=row?.weights?changed.length:'—';
+  $('change-text').textContent=!row?.weights?'Preference changes remain private until the game ends.':changed.length?`P updated ${changed.length} ${changed.length===1?'preference':'preferences'} on this proposal.`:`P kept the current preferences.${g?' Limit: '+Math.floor(g.n/20)+' changes per turn.':''}`;
   $('seek').max=Math.max(1,h.length);$('seek').value=step+1;$('seek').disabled=!h.length;
   $('replay-counter').textContent=h.length?`${step+1} / ${h.length}`:'0 / 0';
   $('previous').disabled=!h.length||step===0;$('next').disabled=!h.length||step===h.length-1;
@@ -61,6 +62,7 @@ function renderArena(){
   renderComparison(pair,live);
   $('profile-caption').textContent=`${g?.n||Number($('n').value)||20} attributes · proposal ${count}`;
   $('curve-title').textContent=g?`${m} · score by attempt`:'Score by attempt';
+  renderDecision(g,row,h[step-1],live,live?state.live:null,key);
   renderClocks();
 }
 
@@ -146,7 +148,7 @@ document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{mode=b.datase
 $('previous').onclick=()=>{stopPlayback();selectStep(step-1);};$('next').onclick=()=>{stopPlayback();selectStep(step+1);};
 $('seek').oninput=()=>{stopPlayback();selectStep(Number($('seek').value)-1);};
 $('follow').onchange=()=>{stopPlayback();if($('follow').checked)frozen=null;else freezeLive();renderArena();};
-$('play').onclick=()=>{if(playing){stopPlayback();return;}if($('follow').checked)freezeLive();$('follow').checked=false;const h=current().game?.history||[];if(step>=h.length-1)step=0;renderArena();$('play').textContent='Ⅱ Pause';playing=setInterval(()=>{const history=current().game?.history||[];if(step>=history.length-1){stopPlayback();return;}step++;renderArena();},500);};
+$('play').onclick=()=>{if(playing){stopPlayback();return;}if($('follow').checked)freezeLive();$('follow').checked=false;const h=current().game?.history||[];if(step>=h.length-1)step=0;renderArena();$('play').textContent='Ⅱ Pause';playing=setInterval(()=>{const history=current().game?.history||[];if(step>=history.length-1){stopPlayback();return;}step++;renderArena();},1600);};
 $('download').onclick=()=>{const c=current();if(c.game)download(c.game,'dating-game-replay.json');};
 $('export-results').onclick=()=>download({results:allResults()},'dating-game-results.json');
 $('import').onclick=()=>$('import-file').click();
