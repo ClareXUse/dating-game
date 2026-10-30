@@ -1,7 +1,7 @@
-import {renderDecision} from './motion.js?v=desk-2';
+import {renderDecision} from './motion.js?v=quiet-2';
 import {$,element,fmt,initial,copy,download,post,error,toast} from './helpers.js';
-import {renderCurve,renderAttributes} from './charts.js?v=desk-2';
-import {renderComparison,setupHelp} from './match-view.js?v=desk-2';
+import {renderCurve,renderAttributes} from './charts.js?v=quiet-2';
+import {renderComparison,setupHelp} from './match-view.js?v=quiet-2';
 setupHelp();
 
 let state={bots:[],results:[],running:false,live:null,active_games:[]};
@@ -51,7 +51,7 @@ function renderArena(){
   $('current-score').textContent=fmt(row?.score);$('current-score').classList.toggle('negative',Number(row?.score)<0);
   $('best-score').textContent=h.length?fmt(Math.max(...h.slice(0,step+1).map(r=>Number(r.score)))):'—';
   const changed=row?.weights?(row.changed||[]):[];$('change-count').textContent=row?.weights?changed.length:'—';
-  $('change-text').textContent=!row?.weights?'Preference changes remain private until the game ends.':changed.length?`P updated ${changed.length} ${changed.length===1?'preference':'preferences'} on this proposal.`:`P kept the current preferences.${g?' Limit: '+Math.floor(g.n/20)+' changes per turn.':''}`;
+  $('change-text').textContent=!row?.weights?'Preference changes remain private until the game ends.':changed.length?`P updated ${changed.length} ${changed.length===1?'preference':'preferences'} on this proposal.`:`No edits.${g?' Limit: '+Math.floor(g.n/20)+' per proposal.':''}`;
   $('seek').max=Math.max(1,h.length);$('seek').value=step+1;$('seek').disabled=!h.length;
   $('replay-counter').textContent=h.length?`${step+1} / ${h.length}`:'0 / 0';
   $('previous').disabled=!h.length||step===0;$('next').disabled=!h.length||step===h.length-1;
@@ -61,7 +61,7 @@ function renderArena(){
   renderGameStrip(pair,index,live);
   renderComparison(pair,live);
   $('profile-caption').textContent=`${g?.n||Number($('n').value)||20} attributes · proposal ${count}`;
-  $('curve-title').textContent=g?`${m} · score by attempt`:'Score by attempt';
+  $('curve-title').textContent='Score history';
   renderDecision(g,row,h[step-1],live,live?state.live:null,key);
   renderClocks();
 }
@@ -83,12 +83,12 @@ function renderGameStrip(pair,index,live){
  const root=$('game-strip');root.replaceChildren();
  for(let i=0;i<2;i++){
    const g=pair.games[i],b=element('button','game-card'+(i===index?' active':''));
-   const head=element('div','game-card-head');head.append(element('strong','',`Game ${i+1} · ${g?.matchmaker||pair.bots[i===0?1:0]}`),element('small','',g?g.cancelled?'STOPPED':g.failure?'ROLE FAILURE':live&&i===index&&state.live.phase!=='finished'?'IN PROGRESS':'RECORDED':'WAITING'));
+   const head=element('div','game-card-head');head.append(element('strong','',`Game ${i+1}`),element('small','',g?g.cancelled?'STOPPED':g.failure?'ROLE FAILURE':live&&i===index&&state.live.phase!=='finished'?'IN PROGRESS':'RECORDED':'WAITING'));
    const metrics=element('div','game-metrics');
    for(const [label,value] of [['Matchmaker',g?.matchmaker||pair.bots[i===0?1:0]],['Best score',g?fmt(g.best_score):'—'],['Proposals',g?.candidates_used??'—']]){
      const item=element('div');item.append(element('small','',label),document.createTextNode(String(value)));metrics.append(item);
    }
-   b.append(head,metrics);b.disabled=!g;
+   b.append(head,metrics);b.disabled=!g;b.setAttribute('aria-pressed',String(i===index));b.title=`Matchmaker: ${g?.matchmaker||pair.bots[i===0?1:0]}`;
    b.onclick=()=>{
      if(live){
        $('follow').checked=false;stopPlayback();frozen={game:g,pair,index:i,live:false};step=0;attribute=0;renderArena();

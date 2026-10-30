@@ -43,11 +43,11 @@ export function renderDecision(game,row,previous,live,event,key){
     emphasize(node,pending?0:i*160);
   });
   const log=$('change-log');log.replaceChildren();
-  log.append(element('h3','',row?`Proposal ${row.round} · what changed`:'What changed in this proposal'));
+  log.append(element('h3','','This proposal · changes'));
   if(!row){log.append(element('p','','Completed proposals will show their changes here.'));return;}
   const table=element('table'),head=element('thead'),hr=element('tr');
-  for(const t of ['Attribute','Candidate · previous → now','Preference · before → after','Score effect of P’s edit'])hr.append(element('th','',t));
-  head.append(hr);table.append(head);const body=element('tbody');table.append(body);
+  for(const t of ['Attribute','Candidate','P weight','Score Δ'])hr.append(element('th','',t));
+  const caption=element('caption','','Previous → current · score Δ is the effect of P’s weight edit');table.append(caption);head.append(hr);table.append(head);const body=element('tbody');table.append(body);
   const priorWeights=previous?.weights||(row.round===1?game.original_weights:null);
   const indices=row.candidate.flatMap((v,i)=>((previous&&v!==previous.candidate[i])||(row.weights&&priorWeights&&row.weights[i]!==priorWeights[i]))?[i]:[]);
   if(!indices.length)log.append(element('p','',previous?'No visible attribute changes.':'First proposal: no previous candidate to compare.'));
@@ -63,8 +63,8 @@ export function renderDecision(game,row,previous,live,event,key){
   }
   if(row.weights&&priorWeights){
     const pre=row.candidate.reduce((sum,v,i)=>sum+v*priorWeights[i],0);
-    log.append(element('p','weight-impact',`Same candidate, before P’s response: ${fmt(pre)} → after: ${fmt(score)}. P’s edits changed its score by ${delta(score-pre)} (rounded).`));
+    log.append(element('p','weight-impact',`P edit effect: ${delta(score-pre)} · score ${fmt(pre)} → ${fmt(score)}`));
   }else log.append(element('p','','Weight changes are revealed after the game.'));
-  log.append(element('p','muted','This shows submitted actions and referee results, not the bot’s internal reasoning.'));
+  const details=element('details','scoring-note');details.append(element('summary','','How to read these changes'),element('p','','Candidate and P weight compare values before and after this proposal. Score Δ holds the current candidate fixed and measures only P’s weight edit. Values are rounded. Submitted actions and referee results are shown; internal bot reasoning is not available.'));log.append(details);
   if(!pending){emphasize($('current-score'),320);if(newBest)emphasize($('best-score'),480);}
 }
