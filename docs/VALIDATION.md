@@ -1,4 +1,12 @@
-# v0.3 validation
+# Validation status
+
+Latest recorded automated run: October 29, 2026. **16 tests: 14 passed, 2 skipped** (g++ and Julia unavailable). Includes saved on-site configuration and explicit P/M selection order. Python was exercised locally on Windows. C++/Julia, macOS/Linux/crunchy5 and final competition settings remain unverified.
+
+The current UI is English-only, with grouped three-metric bars and explicit Person/Matchmaker selectors. Submission instructions live on GitHub. Older UI descriptions below are historical evidence, not instructions for the current interface.
+
+## Historical checks (October 22, 2026)
+
+### v0.3 validation
 
 Checked locally on October 22, 2026 (America/New_York).
 

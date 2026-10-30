@@ -2,6 +2,8 @@
 
 ## Players: what to submit
 
+Use the [complete player submission checklist](SUBMISSION.md) as the participant-facing handoff requirements.
+
 Email `dating-YOUR_NETID.zip` to **zx1946@nyu.edu**, subject `[Dating Game] YOUR_NETID — Bot name`. Deadline: to be announced.
 
 The ZIP must contain one complete `YOUR_NETID/` folder: `bot.py`, strategy source, supplied transport/build files, required resources and a completed `SUBMISSION.md`. Implement both P and M. Include NetID, bot name, language/runtime version, dependencies, build/launch commands, source version and test results. Do not send only the strategy file. Keep strategies private; do not upload entries to public issues.
