@@ -44,4 +44,4 @@ Both games should have `failure: null`. On failure, check paths, dependencies, e
 
 ## On-site settings
 
-Use the [on-site configuration worksheet](ON_SITE_CONFIG.md) for professor-provided values and unresolved competition policies. In **Match settings**, enter the run label, instructions, attribute count and clock before starting. Each dashboard pairing saves those values in its JSON record. Notes describe instructions; they do not change rules or isolate standings.
+Use the [competition-day setup guide](ON_SITE_CONFIG.md). Enter the announced values in **Match settings**, choose an event ID and Official or Practice, then save. Each pairing records its configuration. The leaderboard keeps events separate. Instruction notes are saved for reference; use the setting fields to change runtime behavior.

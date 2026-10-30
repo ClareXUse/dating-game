@@ -1,6 +1,6 @@
 # Dating Game
 
-The architecture for NYU **Heuristic Problem Solving — Dating Game**: a referee that runs your bots, a local browser dashboard, saved game records, and starter folders in **Python, C++ and Julia**.
+Code and submission instructions for the NYU Heuristic Problem Solving Dating Game. Includes the referee, a local match viewer, saved results, and Python, C++ and Julia starter folders.
 
 Architect: **Zonghao Xu** · [zx1946@nyu.edu](mailto:zx1946@nyu.edu)
 
@@ -38,7 +38,7 @@ Their P roles choose random legal preferences and keep them fixed. Scores are ca
 
 ## Receiving submissions and running classmates
 
-Professor-provided competition settings can be recorded using the [on-site configuration worksheet](docs/ON_SITE_CONFIG.md). **Match settings** accepts a run label and instruction notes alongside n and the clock; dashboard results save this context. Notes do not change scoring or separate official standings.
+Use [Match settings](docs/ON_SITE_CONFIG.md) to enter the competition settings announced in class. Save the event name, attribute count, clock, repetitions and ranking policy before running matches. Official and practice events have separate standings.
 
 
 See the [submission and host runbook](docs/HOST_GUIDE.md) for the complete ZIP requirements, submission address, folder placement, roster examples and commands to run received bots. These instructions live here on GitHub; the dashboard is for matches and results.
@@ -47,14 +47,13 @@ See the [submission and host runbook](docs/HOST_GUIDE.md) for the complete ZIP r
 
 ![Dating Game tournament desk](docs/screenshots/dashboard.jpg)
 
-1. **Set up:** choose the Person (P) strategy and Matchmaker (M) strategy for Game 1, then 2–200 attributes, the thinking clock and a watch pace. **Start pairing** plays both role assignments; **Every pair** runs the full roster.
-2. **Know the outcome:** the score comparison shows both programs’ best results as M, the pairing winner and the tie-break rule. **How to play** explains both roles, the scoring loop and victory in English.
-3. **Watch live:** attribute bars, proposal progress, score history and separate P/M clocks update during play. **Stop** preserves completed proposals. Watch pace is outside the thinking clock.
-4. **Understand the score:** click an attribute to inspect its contribution. The grouped chart places Attributes, Preferences and Contributions side by side for each attribute around a shared zero line. The inspector shows the positive and negative sums and their final arithmetic. Weights stay hidden during active play.
-The desktop arena keeps the selected game, attributes, score breakdown, replay controls and change log together. The full-width plot uses one grouped bar chart: each attribute has three adjacent bars for candidate value, P’s weight and score contribution. All bars share the −1 to +1 scale. Click a bar or attribute number for exact values. Weights and contributions remain hidden during play. Long change lists and larger attribute sets scroll inside their panels; smaller screens stack the panels. Scores sit in a horizontal strip above the full-width plot. The desk prioritizes readable spacing over fitting all panels into one screen; history and changes follow below. Replay controls span the match view. Expand “How to read these changes” for the score-delta explanation.
+1. Choose the P and M programs, set the attribute count and clock, and click **Start pairing**. The second game swaps the roles. **Every pair** runs all registered programs against one another.
+2. Watch proposals, scores and clocks as the game runs. The three bars for each attribute show its value, P's weight and its contribution to the score. Weights and contributions are revealed after the game.
+3. Click an attribute for exact values. Dashed bars show the previous values; the change table lists candidate edits and weight changes. Larger attribute sets scroll horizontally.
+4. Use the replay controls to step through a game or play it back. The score comparison shows the winner and tie-break. **How to play** explains the rules.
+5. Open **Leaderboard** and select an event to see its standings and match history. Export JSON to keep a backup; import a record to view its replay.
 
-5. **Follow each decision:** the proposal strip shows candidate edits, P’s response and the referee score in order. Changed attribute bars animate from their previous values, with dashed outlines marking the old values. Beside the score history, the change table compares candidate values and revealed weights and isolates the score effect of P’s edits. Live weights remain hidden. Replay advances every 1.6 seconds; use a watch pace of 1000 ms or more to follow live changes. Reduced-motion preferences disable the animations.
-6. **Replay:** step, play, seek on the chart or slider, follow live, and download JSON. **Leaderboard** shows completed-pairing standings and match history; import/export JSON locally.
+The viewer may receive further layout changes. Submission instructions and the bot protocol are documented separately. Any changes affecting submitted programs will be announced.
 
 Full records save to `results/<timestamp>.json` and restore automatically after a server restart. Starting a run keeps earlier results. Stopped pairings remain available for inspection and are excluded from standings. Imports stay in the browser until reload; use Export results to keep them. Old v0.1 records lack per-proposal weights, so the dashboard explains when a historical contribution is unavailable.
 
