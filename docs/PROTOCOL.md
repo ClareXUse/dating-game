@@ -37,6 +37,6 @@ The role process starts once per game and is terminated after completion or fail
 For diagnostics, run your strategy manually with stderr visible. The tournament runner discards stderr to prevent output accumulation. Full result files include preference vectors only after the game; do not distribute those records during an ongoing competition without the players' agreement.
 
 
-## October 30 weight-update bound
+## Weight-update bound
 
-Every updated weight must be within 5% of its original magnitude: `abs(new - original) <= 0.05 * abs(original)`. At most `floor(n/20)` coordinates may differ from the previous turn. Normalization and two-decimal precision remain required; `{}` keeps the current vector. See [rule clarification](RULES.md).
+Every updated weight must be within 20% of its original magnitude: `abs(new - original) <= 0.20 * abs(original)`. At most `floor(n/20)` coordinates may differ from the previous turn. Normalization and two-decimal precision remain required; `{}` keeps the current vector. See [rule clarification](RULES.md).

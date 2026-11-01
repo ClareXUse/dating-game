@@ -140,7 +140,7 @@ def game(person, matchmaker, n=20, clock=120, seed=None, on_event=None, cancel=N
     result = {'person':person['name'],'matchmaker':matchmaker['name'],'n':n,
               'history':[], 'best_score':'-1.0000','candidates_used':0,'success':False,
               'failure':None,'clock':clock,'cancelled':False,
-              'rules_status':'Fall 2026 / October 30 clarification: 5% original-weight bound'}
+              'rules_status':'Fall 2026 / October 31 clarification: 20% original-weight bound'}
     def emit(phase, thinking=None):
         result['clocks_used'] = {'P':round(p.used,4),'M':round(m.used,4)}
         if on_event:

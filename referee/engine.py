@@ -48,6 +48,6 @@ def update(reply, original, current):
     new = weights(reply['weights'], len(original))
     if sum(x != y for x, y in zip(new, current)) > len(original)//20:
         raise ValueError('Too many changed coordinates in one turn')
-    if any(abs(x-o) > abs(o)*D('.05') for x, o in zip(new, original)):
-        raise ValueError('An updated weight is outside 5% of its original value')
+    if any(abs(x-o) > abs(o)*D('.20') for x, o in zip(new, original)):
+        raise ValueError('An updated weight is outside 20% of its original value')
     return new

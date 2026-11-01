@@ -2,15 +2,13 @@
 
 Source: [Dennis Shasha, Dating Game — Fall 2026](https://cs.nyu.edu/courses/fall26/CSCI-GA.2965-001/dating.html), read in the authenticated in-app browser on October 22, 2026. Direct automated HTTP access returned 401; the browser displayed the full official rule page. The historical third-party mirror is not used to override this source.
 
-## October 30 clarification applied
+## Current referee rule (October 31)
 
-The current referee limits each weight to **±5% of its original value**, following Dennis's October 30 clarification. This supersedes the **20%** amplitude in the rule-page text recorded below. The per-response limit remains floor(n/20) changed coordinates, compared with the previous vector; edits persist. This update does not introduce a requirement that 95% of all coordinates always equal their original values.
+On each response, P may change at most `floor(n/20)` coordinates from their previous values. Each weight must remain within 20% of its **original** value: an initial weight of 0.50 can range from 0.40 to 0.60. Positive weights must still sum to +1 and negative weights to −1. Edits carry over; the 20% allowance does not compound.
 
-Normalization and two-decimal weight precision still apply. For example, an original weight of 0.10 has an allowed interval of 0.095–0.105, so at two-decimal precision it cannot change. Zero weights cannot change either. The sign-preserving bound and exact original-weight success test are unchanged.
+This restores the published course rule and supersedes the temporary October 30 build. New results use the profile `dating-2026-10-31-weight-bound-20pct`. Earlier records retain their original profiles; use a new official event ID when changing profiles.
 
-New results carry the rule profile `dating-2026-10-30-weight-bound-5pct`. Old records are preserved and are not re-scored. Start a new official event rather than combining old-rule and new-rule results.
-
-## Rule-page text recorded October 22 (before clarification)
+## Rules from the course page
 
 - At most **200 attributes**.
 - Initial weights: [-1,1], at most two digits after the decimal; positive sum +1 and negative sum -1, with at least one of each sign.

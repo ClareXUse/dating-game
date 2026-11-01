@@ -110,7 +110,7 @@ class TournamentDesk:
             for old in self.status['results']:
                 config=old.get('match_configuration',{})
                 if config.get('event')==configuration['event'] and config.get('mode')==configuration['mode']:
-                    if configuration['mode']=='official' and config.get('rule_profile')!='dating-2026-10-30-weight-bound-5pct':
+                    if configuration['mode']=='official' and config.get('rule_profile')!='dating-2026-10-31-weight-bound-20pct':
                         raise ValueError('This official event used an older rule profile. Use a new event ID.')
                     if any(config.get(k)!=configuration[k] for k in policy_keys):
                         raise ValueError('This event already has a different ranking policy. Use a new event ID.')
@@ -140,7 +140,7 @@ class TournamentDesk:
                     result['exclusion_reason']='Failure policy: exclude failed pairing'
                 stamp = datetime.now().strftime('%Y%m%d_%H%M%S_%f')
                 result['match_configuration'] = dict(configuration or {}, n=n,clock=clock,
-                    rule_profile='dating-2026-10-30-weight-bound-5pct', ranking_profile=configuration.get('ranking','points'))
+                    rule_profile='dating-2026-10-31-weight-bound-20pct', ranking_profile=configuration.get('ranking','points'))
                 result['id'] = stamp
                 result['saved_at'] = datetime.now().astimezone().isoformat()
                 with self.lock:

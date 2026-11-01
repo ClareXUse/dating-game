@@ -1,4 +1,8 @@
-# October 30 weight-bound update
+# October 31: published rule restored
+
+The current referee enforces a 20% original-relative bound and a 5% per-response coordinate limit. Regression cases cover edits exactly at the bound, moves beyond it, persistent edits and unchanged zero weights.
+
+## Historical: superseded October 30 build
 
 - Applied a 5% original-relative weight bound following Dennis's email clarification; retained the per-response coordinate limit and persistent edits.
 - Python suite: 19 tests, 17 passed, 2 skipped (g++ and Julia unavailable). Tests cover the exact bound, rejection above the bound, no compounding, per-response coordinate counts, small/zero weights and persistent updates.
